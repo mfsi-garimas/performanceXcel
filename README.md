@@ -1,4 +1,4 @@
-##Project Overview
+## Project Overview
 
 This project automates the evaluation of assignments using structured rubrics and a Large Language Model (LLM). It replaces manual grading with consistent, efficient, and scalable automated evaluation.
 
