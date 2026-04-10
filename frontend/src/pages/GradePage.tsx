@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { gradeSubmission } from "../api/gradingApi";
 import "./GradePage.css";
 import ResultViewer from "../components/ResultViewer";

@@ -4,11 +4,6 @@ interface Props {
   data: Record<string, any>;
 }
 
-const getColor = (value: string) => {
-  if (value === "Unsatisfactory") return "#ef4444"; // red
-  if (value === "Partially Proficient") return "#f59e0b"; // yellow
-  return "#22c55e"; // green
-};
 
 const ResultViewer: React.FC<Props> = ({ data }) => {
   const {
