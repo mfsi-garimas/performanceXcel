@@ -68,5 +68,9 @@ class Settings:
         self.RABBITMQ_VHOST: str = os.getenv("RABBITMQ_VHOST", "/")
         self.RABBITMQ_AMQP_URL: str | None = os.getenv("RABBITMQ_AMQP_URL", "").strip() or None
         self.RABBITMQ_INGEST_QUEUE: str = os.getenv("RABBITMQ_INGEST_QUEUE", "agentic_web_starter.ingestion")
+
+        #ollama
+        self.OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generat")
+        self.MODEL_NAME = os.getenv("MODEL_NAME", "gemma3:4b")
         
 settings = Settings()

@@ -1,10 +1,14 @@
-def build_prompt(tokens):
+def build_prompt(rubric_data, rubric_html):
     return f"""
 You are an expert at reading and structuring rubrics from OCR text fragments.
 
-Given this text extracted from a rubric:
+Given this list of text fragments extracted from a rubric:
 
-{tokens}
+{rubric_data}
+
+HTML structure to understand the rubric:
+
+{rubric_html}
 
 Task:
 1. Automatically detect all rubric categories/criteria (e.g., "Restate", "Answer", "Cite", "Explain", "Conventions").

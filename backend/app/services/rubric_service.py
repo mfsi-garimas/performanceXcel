@@ -17,11 +17,10 @@ def extract_rubric(file_path: str):
     try:
         logger.info("Starting rubric extraction", extra={"file_path": file_path})
 
-        text = run_ocr(file_path)
-        tokens = text.split()
-        logger.debug("OCR text tokenized", extra={"token_count": len(tokens), "file_path": file_path})
+        rubric_data = run_ocr(file_path)
+        logger.debug("OCR text tokenized", extra={"file_path": file_path})
 
-        prompt = build_prompt(tokens)
+        prompt = build_prompt(rubric_data)
         logger.debug("Rubric prompt built", extra={"prompt_preview": str(prompt)[:200]})
 
         raw_output = run_llm(prompt)

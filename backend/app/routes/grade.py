@@ -1,8 +1,8 @@
 import os
 import shutil
 from app.config.log_config import logger
-
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+import json
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 
 from app.graph.build_graph import build_graph
 from app.services.file_service import (
@@ -10,6 +10,10 @@ from app.services.file_service import (
     pdf_to_images,
     docx_to_images
 )
+from app.models.evaluation import Evaluation
+from app.db.init_db import SessionLocal
+from datetime import datetime, timedelta
+from app.utils.jwt_handler import verify_token
 
 router = APIRouter()
 graph = build_graph()
@@ -60,8 +64,7 @@ def save_file(file: UploadFile, folder: str):
 async def grade_submission(
     rubric_file: UploadFile = File(None),
     submission_file: UploadFile = File(None),
-    rubric_text: str = Form(None),
-    submission_text: str = Form(None)
+    user_email: str = Depends(verify_token)
 ):
     state = {}
 
@@ -95,6 +98,27 @@ async def grade_submission(
         logger.debug("Initial state prepared", extra={"keys": list(state.keys())})
 
         result = graph.invoke(state)
+
+        evaluation_json = json.dumps(result["final_output"])
+
+        rubric_value = json.dumps(state["rubric_images"])
+        student_submission_value = json.dumps(state["submission_images"])
+
+        db = SessionLocal()
+        new_eval = Evaluation(
+            user_id=1,
+            evaluation=evaluation_json,
+            rubric=rubric_value,
+            student_submission=student_submission_value
+        )
+
+        db.add(new_eval)
+        db.commit()
+        db.refresh(new_eval)
+
+        print("Evaluation saved:", new_eval.id)
+        db.close()
+        print(result.get("final_output", {}))
 
         return {
             "status": "success",

@@ -1,6 +1,5 @@
 from app.services.ocr_service import run_ocr
 from app.services.llm_service import run_llm
-# from app.services.validator import validate_scores
 from app.services.rubric_service import extract_rubric
 from app.prompts.rubric import build_prompt
 from app.prompts.evaluation import build_prompt as build_prompt_evaluate
@@ -17,17 +16,20 @@ def ocr_node(state: dict) -> dict:
         if state.get("rubric_images"):
             text_lines = []
             for img in state["rubric_images"]:
-                text_lines.append(run_ocr(img))
-            state["rubric_text"] = " ".join(text_lines)
-            logger.debug("Rubric OCR completed", extra={"rubric_text_preview": state["rubric_text"][:200]})
+                ocr_output = run_ocr(img)
+                text_lines.append(ocr_output["ocr_text"])
+                state["rubric_text"] = " ".join(text_lines)
+                state["rubric_html"] = ocr_output["table_html"]
+                logger.debug("Rubric OCR completed", extra={"rubric_text_preview": state["rubric_text"][:200]})
 
         # Submission OCR
         if state.get("submission_images"):
             text_lines = []
             for img in state["submission_images"]:
-                text_lines.append(run_ocr(img))
-            state["submission_text"] = " ".join(text_lines)
-            logger.debug("Submission OCR completed", extra={"submission_text_preview": state["submission_text"][:200]})
+                ocr_output = run_ocr(img)
+                text_lines.append(ocr_output["ocr_text"])
+                state["submission_text"] = " ".join(text_lines)
+                logger.debug("Submission OCR completed", extra={"submission_text_preview": state["submission_text"][:200]})
 
         logger.info("OCR node completed", extra={"state_keys": list(state.keys())})
         return state
@@ -60,10 +62,11 @@ def grading_node(state: dict) -> dict:
     """
     try:
         rubric = state.get("rubric_text")
+        rubric_html = state.get("rubric_html","")
         if not rubric:
             raise ValueError("No rubric text available for grading node")
 
-        prompt = build_prompt(rubric)
+        prompt = build_prompt(rubric, rubric_html)
         result = run_llm(prompt)
         state["rubric_json"] = result
 
@@ -102,16 +105,3 @@ def evaluation_node(state: dict) -> dict:
     except Exception as e:
         logger.exception("Evaluation node failed", extra={"state_keys": list(state.keys())})
         raise
-
-# def validation_node(state: dict) -> dict:
-#     """
-#     Optionally validate LLM output scores.
-#     """
-#     try:
-#         validated = validate_scores(state["llm_output"])
-#         state["final_output"] = validated
-#         logger.info("Validation node completed")
-#         return state
-#     except Exception as e:
-#         logger.exception("Validation node failed")
-#         raise

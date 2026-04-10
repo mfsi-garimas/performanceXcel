@@ -1,8 +1,9 @@
 import requests
 from app.config.log_config import logger
+from app.config.env_config import settings
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "gemma3:4b"
+OLLAMA_URL = settings.OLLAMA_URL
+MODEL_NAME = settings.MODEL_NAME
 
 def generate(prompt: str):
     """

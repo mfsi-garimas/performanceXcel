@@ -2,6 +2,7 @@ from typing import TypedDict, Optional, Dict, Any, List
 
 class EvalState(TypedDict):
     rubric_text: Optional[str]
+    rubric_html: Optional[str]
     submission_text: Optional[str]
 
     rubric_file: Optional[str]

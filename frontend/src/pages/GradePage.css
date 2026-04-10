@@ -1,0 +1,62 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eef2ff, #f9fafb);
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 400px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.upload-box {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.upload-box input {
+  margin-top: 5px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: gray;
+}
+
+.success {
+  color: green;
+  font-size: 12px;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.result {
+  margin-top: 20px;
+  text-align: left;
+  background: #f3f4f6;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}

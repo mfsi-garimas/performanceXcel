@@ -4,7 +4,6 @@ from app.graph.nodes import (
     ocr_node,
     merge_input_node,
     grading_node,
-    # validation_node,
     evaluation_node
 )
 
@@ -15,7 +14,6 @@ def build_graph():
     workflow.add_node("merge", merge_input_node)
     workflow.add_node("grade", grading_node)
     workflow.add_node("evaluate", evaluation_node)
-    # workflow.add_node("validate", validation_node)
 
     workflow.set_entry_point("ocr")
 

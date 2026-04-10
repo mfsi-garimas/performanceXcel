@@ -3,11 +3,10 @@ from pdf2image import convert_from_path
 from docx import Document
 from PIL import Image, ImageDraw
 from app.config.log_config import logger
+import uuid
 
 UPLOAD_DIR = "uploads"
 TEMP_IMG_DIR = os.path.join(UPLOAD_DIR, "temp_images")
-os.makedirs(TEMP_IMG_DIR, exist_ok=True)
-
 
 def get_file_extension(filename: str):
     """Return the lowercase file extension."""
@@ -36,7 +35,11 @@ def pdf_to_images(file_path: str):
         image_paths = []
 
         for i, img in enumerate(images):
-            path = os.path.join(TEMP_IMG_DIR, f"{os.path.basename(file_path)}_{i}.png")
+            os.makedirs(TEMP_IMG_DIR, exist_ok=True)
+
+            filename = f"{uuid.uuid4().hex}.png"
+            path = os.path.join(TEMP_IMG_DIR, filename)
+
             img.save(path, "PNG")
             image_paths.append(path)
             logger.debug("Saved PDF page as image", extra={"path": path})
@@ -68,12 +71,15 @@ def docx_to_images(file_path: str):
             logger.warning("DOCX file contains no text", extra={"file_path": file_path})
             text = "[No text found]"
 
-        # Create image
         img = Image.new("RGB", (1200, 1600), "white")
         draw = ImageDraw.Draw(img)
-        draw.text((50, 50), text[:5000], fill="black")  # truncate very long text
+        draw.text((50, 50), text[:5000], fill="black")
 
-        path = os.path.join(TEMP_IMG_DIR, f"{os.path.basename(file_path)}.png")
+        os.makedirs(TEMP_IMG_DIR, exist_ok=True)
+
+        filename = f"{uuid.uuid4().hex}.png"
+        path = os.path.join(TEMP_IMG_DIR, filename)
+
         img.save(path)
         logger.info("DOCX converted to image", extra={"path": path})
 

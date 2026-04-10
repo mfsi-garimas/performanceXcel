@@ -6,12 +6,16 @@ backend/__pycache__/
 *.pyd
 *.db
 .env
+backend/app/logs
+backend/.env
+backend/uploads
 
 # Node
 frontend/node_modules/
 frontend/dist/
 npm-debug.log
 yarn-error.log
+frontend/.env
 
 # Docker
 docker/*.log
@@ -25,4 +29,3 @@ Thumbs.db
 .vscode/
 .idea/
 
-uploads/
