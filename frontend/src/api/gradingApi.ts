@@ -1,6 +1,6 @@
 import type { GradeResponse } from "../types/grading";
 
-const API_URL = import.meta.env.VITE_BACKEND_API_URL + "/grade";
+const API_URL = import.meta.env.VITE_BACKEND_API_URL + "/api/grade";
 
 export const gradeSubmission = async (
   rubricFile?: File,

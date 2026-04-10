@@ -60,7 +60,7 @@ def save_file(file: UploadFile, folder: str):
         raise
 
 
-@router.post("/")
+@router.post("/grade")
 async def grade_submission(
     rubric_file: UploadFile = File(None),
     submission_file: UploadFile = File(None),

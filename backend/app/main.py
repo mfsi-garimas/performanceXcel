@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import grade, rubric, users, auth
+from app.routes import grade, auth
 from app.db.init_db import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 from app.models.user import User  
@@ -19,8 +19,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(grade.router, prefix="/grade", tags=["Grading"])
-app.include_router(auth.router, prefix="/auth", tags=["AUTH"])
+app.include_router(grade.router, prefix="/api", tags=["Grading"])
+app.include_router(auth.router, prefix="/api/auth", tags=["AUTH"])
 
 # app.include_router(rubric.router, prefix="/rubric", tags=["Rubric"])
 # app.include_router(users.router, prefix="/users", tags=["Users"])
