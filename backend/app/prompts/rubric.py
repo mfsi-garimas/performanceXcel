@@ -38,5 +38,5 @@ Make sure the JSON is valid and includes all detected categories and level descr
 Return ONLY valid JSON. No extra text.
 Ensure all brackets are closed.
 
-If you cannot finish JSON, output {} only.
+If you cannot finish JSON, output {{}} only.
 """
