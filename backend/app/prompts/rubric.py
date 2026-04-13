@@ -35,4 +35,8 @@ Task:
 5. Detect the name of the rubric from the text fragments and HTML structure.
 
 Make sure the JSON is valid and includes all detected categories and level descriptions.
+Return ONLY valid JSON. No extra text.
+Ensure all brackets are closed.
+
+If you cannot finish JSON, output {} only.
 """
