@@ -21,7 +21,7 @@ def generate(prompt: str):
                 "prompt": prompt,
                 "stream": False,
                 "options": {
-                    "num_predict": 150,     
+                    "num_predict": 300,     
                     "temperature": 0.7,
                     "top_p": 0.9,
                     "num_ctx": 2048      
