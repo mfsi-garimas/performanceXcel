@@ -21,13 +21,11 @@ def generate(prompt: str):
                 "prompt": prompt,
                 "stream": False,
                 "options": {
-                    "num_predict": 300,     
                     "temperature": 0.1,
                     "top_p": 0.9,
-                    "num_ctx": 2048      
                 }
             },
-            timeout=180  
+            timeout=300  
         )
 
         response.raise_for_status()

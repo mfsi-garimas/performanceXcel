@@ -5,15 +5,24 @@ import Login from "./components/auth/Login";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
+import RubricPage from "./pages/RubricPage";
 
 function App() {
   return <BrowserRouter>
       <Routes>
         <Route
-          path="/grade"
+          path="/evaluation"
           element={
             <ProtectedRoute>
               <GradePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rubric"
+          element={
+            <ProtectedRoute>
+              <RubricPage />
             </ProtectedRoute>
           }
         />

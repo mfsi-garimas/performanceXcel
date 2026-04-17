@@ -1,14 +1,14 @@
-import type { GradeResponse } from "../types/grading";
+import type { Response } from "../types/response";
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL + "/api/grade";
 
 export const gradeSubmission = async (
-  rubricFile?: File,
+  selectedRubricId?: number,
   submissionFile?: File
-): Promise<GradeResponse> => {
+): Promise<Response> => {
   const formData = new FormData();
 
-  if (rubricFile) formData.append("rubric_file", rubricFile);
+  if (selectedRubricId) formData.append("rubric_id", String(selectedRubricId));
   if (submissionFile) formData.append("submission_file", submissionFile);
 
   const token = localStorage.getItem("token");
@@ -26,6 +26,12 @@ export const gradeSubmission = async (
   });
 
   const data = await response.json();
+
+  if (response.status === 401 || data?.detail === "Token is invalid or expired") {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+    return Promise.reject(new Error("Session expired"));
+  }
 
   if (!response.ok) {
     let message = "Something went wrong";

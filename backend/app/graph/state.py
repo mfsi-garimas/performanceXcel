@@ -8,6 +8,8 @@ class EvalState(TypedDict):
     rubric_file: Optional[str]
     submission_file: Optional[str]
 
+    rubric_id: Optional[int]
+
     rubric_images: Optional[List[str]]
     submission_images: Optional[List[str]]
 

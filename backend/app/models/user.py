@@ -13,3 +13,4 @@ class User(Base):
     reset_token_expiry = Column(DateTime, nullable=True)
 
     evaluations = relationship("Evaluation", back_populates="user")
+    rubrics = relationship("Rubric", back_populates="user")

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { login } from "../../api/auth";
+import styles from "./Login.module.css"; // 👈 important
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -15,46 +16,75 @@ const Login: React.FC = () => {
     try {
       const data = await login(email, password);
       localStorage.setItem("token", data.access_token);
-      window.location.href = "/grade";
-    //   console.log("Logged in:", data);
+      window.location.href = "/evaluation";
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        {error && <p className="error">{error}</p>}
-
-        <div className="forgot-wrapper">
-          <a href="/forgot-password">Forgot Password?</a>
+    <div className={styles.page}>
+      {/* LEFT */}
+      <div className={styles.left}>
+        <div className={styles.overlay}>
+          <h1 className={styles.title}>Performance Xcel</h1>
+          <p className={styles.tagline}>
+            Evaluate smarter, faster, and better 🚀
+          </p>
         </div>
+      </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
+      {/* RIGHT */}
+      <div className={styles.right}>
+        <div className={styles.container}>
+          <h2 className={styles.heading}>Welcome Back 👋</h2>
+          <p className={styles.subtitle}>
+            Welcome back — let’s make grading effortless
+          </p>
+
+          <form onSubmit={handleSubmit}>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Email</label>
+              <input
+                className={styles.input}
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Password</label>
+              <input
+                className={styles.input}
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <p className={styles.error}>{error}</p>}
+
+            <div className={styles.forgot}>
+              <a href="/forgot-password">Forgot Password?</a>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={styles.button}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

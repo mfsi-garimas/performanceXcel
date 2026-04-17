@@ -1,9 +1,9 @@
 import React from "react";
+import styles from "./ResultViewer.module.css";
 
 interface Props {
   data: Record<string, any>;
 }
-
 
 const ResultViewer: React.FC<Props> = ({ data }) => {
   const {
@@ -20,48 +20,46 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
     : 0;
 
   return (
-    <div style={styles.container}>
+    <div className={styles.container}>
       {/* 🔹 Summary */}
-      <div style={styles.card}>
-        <h2>📊 Grading Summary</h2>
+      <div className={styles.card}>
+        <h2 className={styles.title}>📊 Grading Summary</h2>
 
-        <div style={styles.row}>
+        <div className={styles.row}>
           <div>
             <strong>Score:</strong> {TotalScore}
           </div>
           <div>
             <strong>Grade:</strong>{" "}
-            <span style={styles.gradeBadge}>{Grade}</span>
+            <span className={styles.gradeBadge}>{Grade}</span>
           </div>
         </div>
 
-        <p style={{ marginTop: "5px" }}>
+        <p className={styles.text}>
           <strong>Overall:</strong> {OverallGrade}
         </p>
 
-        {/* Progress */}
-        <div style={styles.progressContainer}>
+        <div className={styles.progressContainer}>
           <div
-            style={{
-              ...styles.progressBar,
-              width: `${percentageValue}%`,
-            }}
+            className={styles.progressBar}
+            style={{ width: `${percentageValue}%` }}
           />
         </div>
-        <p style={{ fontSize: "12px" }}>{Percentage}</p>
+
+        <p className={styles.text}>{Percentage}</p>
       </div>
 
       {/* 🔹 Criteria */}
-      <div style={styles.card}>
-        <h3>Criteria Breakdown</h3>
+      <div className={styles.card}>
+        <h3 className={styles.title}>Criteria Breakdown</h3>
 
         {Object.entries(criteria).map(([key, value]) => {
-          if (typeof value !== "string") return null; // skip non-strings
+          if (typeof value !== "string") return null;
 
           return (
-            <div key={key} style={styles.criteriaRow}>
+            <div key={key} className={styles.criteriaRow}>
               <span>{key}</span>
-              <span style={styles.tag}>{value}</span>
+              <span className={styles.tag}>{value}</span>
             </div>
           );
         })}
@@ -69,18 +67,18 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
 
       {/* 🔹 Feedback */}
       {Feedback && (
-        <div style={styles.card}>
-          <h3>Feedback</h3>
+        <div className={styles.card}>
+          <h3 className={styles.title}>Feedback</h3>
 
-          {/* AlignedToRubric */}
+          {/* Aligned */}
           {Feedback.AlignedToRubric && (
             <>
-              <h4>Aligned To Rubric</h4>
+              <h4 className={styles.subheading}>Aligned to Rubric</h4>
               {Object.entries(Feedback.AlignedToRubric).map(
                 ([key, value]) => (
-                  <div key={key} style={{ marginBottom: "10px" }}>
-                    <strong>{key}</strong>
-                    <p style={styles.text}>{value as string}</p>
+                  <div key={key}>
+                    <h5>{key}</h5>
+                    <p className={styles.text}>{value as string}</p>
                   </div>
                 )
               )}
@@ -90,8 +88,8 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
           {/* Strengths */}
           {Feedback.Strengths && (
             <>
-              <h4>Strengths</h4>
-              <ul>
+              <h4 className={styles.subheading}>Strengths</h4>
+              <ul className={styles.list}>
                 {Feedback.Strengths.map((item: string, i: number) => (
                   <li key={i}>{item}</li>
                 ))}
@@ -99,11 +97,13 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
             </>
           )}
 
-          {/* Areas for Improvement */}
+          {/* Improvements */}
           {Feedback.AreasForImprovement && (
             <>
-              <h4>Areas for Improvement</h4>
-              <ul>
+              <h4 className={styles.subheading}>
+                Areas for Improvement
+              </h4>
+              <ul className={styles.list}>
                 {Feedback.AreasForImprovement.map(
                   (item: string, i: number) => (
                     <li key={i}>{item}</li>
@@ -116,8 +116,8 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
           {/* Suggestions */}
           {Feedback.SuggestionsForRevision && (
             <>
-              <h4>Suggestions</h4>
-              <ul>
+              <h4 className={styles.subheading}>Suggestions</h4>
+              <ul className={styles.list}>
                 {Feedback.SuggestionsForRevision.map(
                   (item: string, i: number) => (
                     <li key={i}>{item}</li>
@@ -130,56 +130,6 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
       )}
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    marginTop: "20px",
-  },
-  card: {
-    background: "white",
-    padding: "16px",
-    borderRadius: "12px",
-    marginBottom: "16px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-  },
-  row: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  gradeBadge: {
-    background: "#2563eb",
-    color: "white",
-    padding: "4px 10px",
-    borderRadius: "8px",
-  },
-  progressContainer: {
-    marginTop: "10px",
-    background: "#e5e7eb",
-    height: "10px",
-    borderRadius: "6px",
-    overflow: "hidden",
-  },
-  progressBar: {
-    height: "100%",
-    background: "#22c55e",
-  },
-  criteriaRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "8px 0",
-    borderBottom: "1px solid #eee",
-  },
-  tag: {
-    color: "black",
-    padding: "4px 8px",
-    borderRadius: "6px",
-    fontSize: "12px",
-  },
-  text: {
-    fontSize: "14px",
-    color: "#555",
-  },
 };
 
 export default ResultViewer;

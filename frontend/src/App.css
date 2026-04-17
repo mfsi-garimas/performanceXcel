@@ -5,6 +5,12 @@
   margin: auto;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; 
+}
+
 .login-container input {
   margin-bottom: 10px;
   padding: 10px;
@@ -50,4 +56,19 @@ form {
 
 #root{
   border-inline:none !important;
+  width:100%;
+}
+
+
+.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border-left: 4px solid #10b981;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
