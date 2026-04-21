@@ -1,6 +1,6 @@
 import type { Response } from "../types/response";
 
-const API_URL = import.meta.env.VITE_BACKEND_API_URL + "/api/grade";
+const API_URL = import.meta.env.VITE_BACKEND_API_URL + "/api";
 
 export const gradeSubmission = async (
   selectedRubricId?: number,
@@ -17,7 +17,7 @@ export const gradeSubmission = async (
     throw new Error("User not logged in");
   }
 
-  const response = await fetch(`${API_URL}/`, {
+  const response = await fetch(`${API_URL}/evaluate-submission`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -46,4 +46,28 @@ export const gradeSubmission = async (
   }
 
   return data;
+};
+
+export const getEvaluations = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("User not logged in");
+  }
+
+  const res = await fetch(`${API_URL}/get-all-evaluations`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 401 ) {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+    return Promise.reject(new Error("Session expired"));
+  }
+
+
+  return res.json();
 };

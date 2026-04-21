@@ -45,8 +45,7 @@ async def get_all_evaluations(user_email: str = Depends(verify_token)):
                 "created_date": e.created_date,
 
                 "rubric": {
-                    "title": e.rubric.title if e.rubric else None,
-                    "rubric_json": e.rubric.rubric_json if e.rubric else None,
+                    "title": e.rubric.rubric_title if e.rubric else None,
                     "rubric_path": e.rubric.rubric_path if e.rubric else None,
                 }
             })
@@ -58,14 +57,14 @@ async def get_all_evaluations(user_email: str = Depends(verify_token)):
         }
 
     except Exception:
-        logger.exception("Failed to fetch rubrics")
-        raise HTTPException(status_code=500, detail="Failed to fetch rubrics")
+        logger.exception("Failed to fetch evaluations")
+        raise HTTPException(status_code=500, detail="Failed to fetch evaluations")
 
     finally:
         if db:
             db.close()
 
-@router.post("/grade")
+@router.post("/evaluate-submission")
 async def grade_submission(
     rubric_id: int = Form(...),
     submission_file: UploadFile = File(None),

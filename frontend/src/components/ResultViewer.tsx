@@ -6,6 +6,11 @@ interface Props {
 }
 
 const ResultViewer: React.FC<Props> = ({ data }) => {
+  if (!data) return null;
+
+  const safeData = typeof data === "string" ? JSON.parse(data) : data;
+
+
   const {
     TotalScore,
     Percentage,
@@ -13,7 +18,7 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
     OverallGrade,
     Feedback,
     ...criteria
-  } = data.data;
+  } = safeData;
 
   const percentageValue = Percentage
     ? parseInt(Percentage.replace("%", ""))

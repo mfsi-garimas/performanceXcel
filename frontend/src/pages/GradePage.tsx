@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { gradeSubmission } from "../api/gradingApi";
+import { gradeSubmission, getEvaluations } from "../api/gradingApi";
 import styles from "./GradePage.module.css";
 import ResultViewer from "../components/ResultViewer";
 import Layout from "../components/Layout";
@@ -13,6 +13,9 @@ const GradePage = () => {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
   const [selectedRubricId, setSelectedRubricId] = useState<number | null>(null);
+  const [evaluations, setEvaluations] = useState<any[]>([]);
+  const [selectedEvaluation, setSelectedEvaluation] = useState<any>(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
       const fetchData = async () => {
@@ -24,7 +27,17 @@ const GradePage = () => {
         }
       };
 
+      const fetchDataEvaluations = async () => {
+        try {
+          const res = await getEvaluations();
+          setEvaluations(res.data);
+        } catch (err) {
+          console.error("Failed to load rubrics");
+        }
+      };
+
       fetchData();
+      fetchDataEvaluations();
   }, []);
 
   const handleSubmit = async () => {
@@ -123,21 +136,69 @@ const GradePage = () => {
 
       {/* RIGHT SIDE */}
       <div className={styles.right}>
-        {!result ? (
+        {evaluations.length === 0 ? (
           <div className={styles.placeholder}>
             <div className={styles.placeholderContent}>
               📊
-              <h3>No Evaluation Yet</h3>
-              <p>
-                Upload files and click "Generate Evaluation" to see results
-              </p>
+              <h3>No Evaluations Yet</h3>
+              <p>Run evaluation to see results</p>
             </div>
           </div>
         ) : (
-          <ResultViewer data={result} />
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Student Name</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {evaluations.map((item, index) => {
+                const evalData = item.evaluation;
+
+                return (
+                  <tr key={item.id}>
+                    <td>{index + 1}</td>
+                    <td>Test</td>
+                    <td>
+                      {new Date(item.created_date).toLocaleString()}
+                    </td>
+                    <td>
+                      <button
+                        className={styles.viewBtn}
+                        onClick={() => {
+                          setSelectedEvaluation(item);
+                          setShowModal(true);
+                        }}
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         )}
       </div>
     </div>
+
+    {showModal && selectedEvaluation && (
+      <div className={styles.modalOverlay}>
+        <div className={styles.modal}>
+          <button
+            className={styles.closeBtn}
+            onClick={() => setShowModal(false)}
+          >
+            ✖
+          </button>
+
+          <ResultViewer data={selectedEvaluation.evaluation} />
+        </div>
+      </div>
+    )}
   </Layout>
   );
 };
