@@ -19,14 +19,16 @@ const RubricStore = () => {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  // const [success, setSuccess] = useState("");
+  const [status, setStatus] = useState("");
+  const [result, setResult] = useState<string | null>(null);
 
   const fetchRubrics = async () => {
     try {
       const res = await getRubrics();
       setRubrics(res.data);
     } catch (err) {
-      console.error("Failed to load rubrics");
+      setError("Failed to load rubrics");
     }
   };
 
@@ -45,26 +47,45 @@ const RubricStore = () => {
   }, []);
 
   const handleSubmit = async () => {
-      if (!rubricFile) {
-        setError("Please upload both rubric and submission");
-        return;
+  if (!rubricFile) {
+    setError("Please upload both rubric and submission");
+    return;
+  }
+
+  setLoading(true);
+  setError("");
+  setStatus(""); 
+  setResult(null); 
+
+  try {
+    await uploadRubric(rubricFile, rubricTitle, (update) => {
+      console.log(update);
+      if (update.message) {
+        setStatus(update.message);
       }
-  
-      setLoading(true);
-      setError("");
-  
-      try {
-        await uploadRubric(rubricFile, rubricTitle);
-        setSuccess("Rubric uploaded");
-        await fetchRubrics(); 
-        setRubricFile(null);
-        setRubricTitle("");
-      } catch (err: any) {
-        setError(err?.message || "Something went wrong");
-      } finally {
-        setLoading(false);
+
+      if (update.stage === "completed" && update.data) {
+        setStatus("Done ✅");
+        setResult(update.data);
       }
-    };
+
+      if (update.stage === "error") {
+        setError(update.message || "Something went wrong");
+      }
+
+    });
+
+    await fetchRubrics();
+
+    setRubricFile(null);
+    setRubricTitle("");
+
+  } catch (err: any) {
+    setError(err?.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className={styles.wrapper}>
@@ -106,10 +127,10 @@ const RubricStore = () => {
             {loading ? "Uploading..." : "Upload File"}
           </button>
           {error && (
-            <div className={styles.error}>⚠️ {error}</div>
+            <div className={styles.error}>{error}</div>
           )}
-          {success && (
-            <div className={styles.success}>{success}</div>
+          {status && (
+            <div className={styles.success}>{status}</div>
           )}
         </div>
       </div>

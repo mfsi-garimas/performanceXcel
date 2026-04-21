@@ -103,7 +103,7 @@ const GradePage = () => {
               }
             />
             {submissionFile && (
-              <p className={styles.fileName}>📄 {submissionFile.name}</p>
+              <p className={styles.fileName}>{submissionFile.name}</p>
             )}
           </div>
 
@@ -116,7 +116,7 @@ const GradePage = () => {
           </button>
 
           {error && (
-            <div className={styles.error}>⚠️ {error}</div>
+            <div className={styles.error}>{error}</div>
           )}
         </div>
       </div>

@@ -54,22 +54,14 @@ export const removeRubric = async (rubricId: number) => {
 export const uploadRubric = async (
   rubricFile?: File,
   rubricTitle?: string,
-): Promise<Response> => {
+  onProgress?: (data: any) => void
+) => {
   const formData = new FormData();
 
-  if (rubricFile) {
-    formData.append("rubric_file", rubricFile);
-  }
-
-  if (rubricTitle !== undefined) {
-    formData.append("rubric_title", rubricTitle);
-  }
+  if (rubricFile) formData.append("rubric_file", rubricFile);
+  if (rubricTitle) formData.append("rubric_title", rubricTitle);
 
   const token = localStorage.getItem("token");
-
-  if (!token) {
-    throw new Error("User not logged in");
-  }
 
   const response = await fetch(`${API_URL}/add-rubric`, {
     method: "POST",
@@ -79,25 +71,28 @@ export const uploadRubric = async (
     body: formData,
   });
 
-  const data = await response.json();
+  if (!response.body) throw new Error("No response body");
 
-  if (response.status === 401 || data?.detail === "Token is invalid or expired") {
-    localStorage.removeItem("token"); 
-    window.location.href = "/";
-    return Promise.reject(new Error("Session expired"));
-  }
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8");
 
-  if (!response.ok) {
-    let message = "Something went wrong";
+  let done = false;
 
-    if (Array.isArray(data.detail)) {
-      message = data.detail[0]?.msg;
-    } else if (typeof data.detail === "string") {
-      message = data.detail;
+  while (!done) {
+    const { value, done: doneReading } = await reader.read();
+    done = doneReading;
+
+    const chunk = decoder.decode(value, { stream: true });
+
+    const lines = chunk.split("\n").filter(Boolean);
+
+    for (const line of lines) {
+      try {
+        const parsed = JSON.parse(line);
+        onProgress?.(parsed);
+      } catch (err) {
+        console.error("Invalid JSON chunk", line);
+      }
     }
-
-    throw new Error(message);
   }
-
-  return data;
 };

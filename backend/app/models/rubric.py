@@ -15,3 +15,4 @@ class Rubric(Base):
     created_date = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     user = relationship("User", back_populates="rubrics")
+    evaluations = relationship("Evaluation", back_populates="rubric")

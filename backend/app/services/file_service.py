@@ -9,64 +9,25 @@ import shutil
 
 UPLOAD_DIR = "uploads"
 TEMP_IMG_DIR = os.path.join(UPLOAD_DIR, "temp_images")
+TEMP_DIR = os.path.join(UPLOAD_DIR, "temp")
+REQUIRED_DIR = os.path.join(UPLOAD_DIR, "required")
 
-def clean_upload_dir(exclude: set[str] = None):
-    """
-    Cleans all files/folders in UPLOAD_DIR except excluded ones.
-    In 'rubric-images', only non-image files are removed.
-    """
-    exclude = exclude or set()
-    image_exts = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp"}
-
+def clean_upload_dir():
     try:
-        if not os.path.exists(UPLOAD_DIR):
-            return
+        if os.path.exists(TEMP_DIR):
+            shutil.rmtree(TEMP_DIR)
+            os.makedirs(TEMP_DIR, exist_ok=True)
 
-        for item in os.listdir(UPLOAD_DIR):
-            if item in exclude:
-                continue
-
-            item_path = os.path.join(UPLOAD_DIR, item)
-
-            try:
-                if item == "rubric-images" and os.path.isdir(item_path):
-                    for sub_item in os.listdir(item_path):
-                        sub_path = os.path.join(item_path, sub_item)
-
-                        try:
-                            if os.path.isdir(sub_path):
-                                shutil.rmtree(sub_path)
-                                continue
-
-                            ext = os.path.splitext(sub_item.strip())[1].lower()
-
-                            logger.debug(f"Processing: {sub_item}, ext: {ext}")
-
-                            if ext in image_exts:
-                                logger.debug(f"Keeping image: {sub_path}")
-                                continue
-
-                            os.remove(sub_path)
-                            logger.info(f"Deleted: {sub_path}")
-
-                        except Exception as e:
-                            logger.exception(f"Failed to delete: {sub_path} | Error: {e}")
-
-                else:
-                    if os.path.isdir(item_path):
-                        shutil.rmtree(item_path)
-                    else:
-                        os.remove(item_path)
-
-            except Exception:
-                logger.exception(f"Failed to delete: {item_path}")
+        logger.info("Temp upload directory cleaned")
 
     except Exception:
-        logger.exception("Failed to clean upload directory")
+        logger.exception("Failed to clean temp directory")
 
-def save_file(file: UploadFile, folder: str):
+def save_file(file: UploadFile, folder: str , storage_type: str = "temp"):
     try:
-        dir_path = os.path.join(UPLOAD_DIR, folder)
+        base_dir = TEMP_DIR if storage_type == "temp" else REQUIRED_DIR
+
+        dir_path = os.path.join(base_dir, folder)
         os.makedirs(dir_path, exist_ok=True)
 
         name, ext = os.path.splitext(file.filename)
@@ -83,26 +44,26 @@ def save_file(file: UploadFile, folder: str):
         logger.exception("File saving failed", extra={"uploaded_filename": file.filename})
         raise
 
-def process_file(file_path: str, folder: str | None = None):
+def process_file(file_path: str, folder: str , storage_type: str = "temp"):
     try:
+        base_dir = TEMP_DIR if storage_type == "temp" else REQUIRED_DIR
         ext = get_file_extension(file_path)
 
-        if folder is not None:
-            folder = os.path.join(UPLOAD_DIR, folder)
-            os.makedirs(folder, exist_ok=True)
+        dir_path = os.path.join(base_dir, folder)
+        os.makedirs(dir_path, exist_ok=True)
 
         if ext in ["png", "jpg", "jpeg"]:
-            return [file_path]
+            filename = os.path.basename(file_path)
+            new_filename = f"{uuid.uuid4().hex}.{ext}"
+            new_path = os.path.join(dir_path, new_filename)
+            shutil.copy(file_path, new_path)
+            return [new_path]
 
         elif ext == "pdf":
-            if folder is not None:
-                return pdf_to_images(file_path, folder=folder)
-            return pdf_to_images(file_path)
+            return pdf_to_images(file_path, folder, storage_type)
 
         elif ext == "docx":
-            if folder is not None:
-                return docx_to_images(file_path, folder=folder)
-            return docx_to_images(file_path)
+            return docx_to_images(file_path, folder, storage_type)
 
         else:
             raise ValueError(f"Unsupported file type: {ext}")
@@ -122,41 +83,35 @@ def get_file_extension(filename: str):
         raise
 
 
-def pdf_to_images(file_path: str, folder: str | None = None):
+def pdf_to_images(file_path: str, folder: str, storage_type: str = "temp"):
     """
     Convert a PDF file to a list of PNG images.
 
     Args:
         file_path: Path to the PDF file.
-        folder: Optional folder to also save images.
+        folder: folder to also save images.
 
     Returns:
         List of generated PNG image paths (TEMP dir paths).
     """
     try:
+        base_dir = TEMP_DIR if storage_type == "temp" else REQUIRED_DIR
         logger.info("Converting PDF to images", extra={"file_path": file_path})
+
+        dir_path = os.path.join(base_dir, folder)
+        
         images = convert_from_path(file_path)
         image_paths = []
 
         for i, img in enumerate(images):
-            os.makedirs(TEMP_IMG_DIR, exist_ok=True)
-
-            if folder is not None:
-                os.makedirs(folder, exist_ok=True)
 
             filename = f"{uuid.uuid4().hex}.png"
-            path = os.path.join(TEMP_IMG_DIR, filename)
+            path = os.path.join(dir_path, filename)
 
             img.save(path, "PNG")
             logger.debug("Saved PDF page as image", extra={"path": path})
 
-            if folder is not None:
-                folder_path = os.path.join(folder, filename)
-                img.save(folder_path, "PNG")
-                logger.debug("Saved copy to folder", extra={"path": folder_path})
-                image_paths.append(folder_path)
-            else:
-                image_paths.append(path)
+            image_paths.append(path)
 
         logger.info("PDF conversion complete", extra={"file_path": file_path, "pages": len(images)})
         return image_paths
@@ -166,7 +121,7 @@ def pdf_to_images(file_path: str, folder: str | None = None):
         raise
 
 
-def docx_to_images(file_path: str, folder: str | None = None):
+def docx_to_images(file_path: str, folder: str, storage_type: str = "temp"):
     """
     Convert a DOCX file to multiple PNG images (chunked text).
 
@@ -178,7 +133,9 @@ def docx_to_images(file_path: str, folder: str | None = None):
         List of generated PNG image paths.
     """
     try:
+        base_dir = TEMP_DIR if storage_type == "temp" else REQUIRED_DIR
         logger.info("Converting DOCX to images", extra={"file_path": file_path})
+        dir_path = os.path.join(base_dir, folder)
 
         doc = Document(file_path)
         paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
@@ -193,10 +150,6 @@ def docx_to_images(file_path: str, folder: str | None = None):
 
         image_paths = []
 
-        os.makedirs(TEMP_IMG_DIR, exist_ok=True)
-        if folder is not None:
-            os.makedirs(folder, exist_ok=True)
-
         for i, chunk in enumerate(text_chunks):
             img = Image.new("RGB", (1200, 1600), "white")
             draw = ImageDraw.Draw(img)
@@ -204,18 +157,12 @@ def docx_to_images(file_path: str, folder: str | None = None):
             draw.text((50, 50), chunk, fill="black")
 
             filename = f"{uuid.uuid4().hex}.png"
-            temp_path = os.path.join(TEMP_IMG_DIR, filename)
+            temp_path = os.path.join(dir_path, filename)
 
             img.save(temp_path, "PNG")
             logger.debug("Saved DOCX chunk as image", extra={"path": temp_path})
 
-            if folder is not None:
-                folder_path = os.path.join(folder, filename)
-                img.save(folder_path, "PNG")
-                logger.debug("Saved copy to folder", extra={"path": folder_path})
-                image_paths.append(folder_path)
-            else:
-                image_paths.append(temp_path)
+            image_paths.append(temp_path)
 
         logger.info(
             "DOCX conversion complete",

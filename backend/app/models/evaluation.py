@@ -9,10 +9,11 @@ class Evaluation(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    rubric_id = Column(Integer, ForeignKey("rubrics.id"), nullable=True, index=True)
 
     evaluation = Column(String, nullable=False)
-    rubric = Column(String, nullable=True)
     student_submission = Column(String, nullable=True)
     created_date = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     user = relationship("User", back_populates="evaluations")
+    rubric = relationship("Rubric", back_populates="evaluations")

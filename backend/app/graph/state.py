@@ -18,3 +18,5 @@ class EvalState(TypedDict):
 
     llm_output: Optional[Dict[str, Any]]
     final_output: Optional[Dict[str, Any]]
+
+    events: Optional[List[str]]

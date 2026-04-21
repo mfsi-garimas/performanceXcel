@@ -10,9 +10,22 @@ from app.db.init_db import SessionLocal
 from app.graph.build_graph import build_graph
 from app.utils.jwt_handler import verify_token
 from app.config.log_config import logger
+from fastapi.responses import StreamingResponse
+import asyncio
 
 router = APIRouter()
 graph = build_graph()
+
+def send(stage: str, message: str = None, data: dict = None):
+    payload = {
+        "stage": stage
+    }
+    if message:
+        payload["message"] = message
+    if data:
+        payload["data"] = data
+
+    return json.dumps(payload) + "\n"
 
 @router.post("/add-rubric")
 async def create_rubric(
@@ -20,68 +33,70 @@ async def create_rubric(
     rubric_file: UploadFile = File(...),
     user_email: str = Depends(verify_token)
 ):
-    state = {}
-    db = None
+    async def event_stream():
+        state = {}
+        db = None
 
-    try:
-        logger.info("Processing rubric file", extra={
-            "rubric_file_name": rubric_file.filename
-        })
+        try:
+            yield send("upload_started", "Uploading file...")
 
-        rubric_path = save_file(rubric_file, "rubric-images")
-        rubric_images = process_file(rubric_path, "rubric-images")
+            await asyncio.sleep(0)
 
-        state["rubric_images"] = rubric_images
+            rubric_path = await asyncio.to_thread(
+                save_file, rubric_file, "rubric-images"
+            )
 
-        logger.debug("Initial state prepared", extra={
-            "keys": list(state.keys())
-        })
+            yield send("file_saved", "Rubric file saved...")
+            await asyncio.sleep(0)
 
-        result = graph.invoke(state)
+            rubric_images = await asyncio.to_thread(
+                process_file, rubric_path, "rubric-images", "required"
+            )
+            await asyncio.sleep(0)
 
-        rubric_json_data = result.get("rubric_json")
-        if not rubric_json_data:
-            raise ValueError("Rubric JSON generation failed")
+            state["rubric_images"] = rubric_images
 
-        rubric_json = json.dumps(rubric_json_data)
-        rubric_value = json.dumps(rubric_images)
+            yield send("generating_rubric", "Rubric Processing started...")
+            await asyncio.sleep(0)
 
-        db = SessionLocal()
+            result = await asyncio.to_thread(graph.invoke, state)
 
-        new_rubric = Rubric(
-            user_id=1,  
-            rubric_json=rubric_json,
-            rubric_path=rubric_value,
-            rubric_title=rubric_title
-        )
+            rubric_json_data = result.get("rubric_json")
+            if not rubric_json_data:
+                yield send("error", "Rubric JSON generation failed")
+                return
 
-        db.add(new_rubric)
-        db.commit()
-        db.refresh(new_rubric)
+            yield send("saving_to_db", "Saved to db...")
+            await asyncio.sleep(0)
 
-        logger.info("Rubric saved", extra={"rubric_id": new_rubric.id})
+            db = SessionLocal()
 
-        return {
-            "status": "success",
-            "data": rubric_json_data
-        }
+            new_rubric = Rubric(
+                user_id=1,
+                rubric_json=json.dumps(rubric_json_data),
+                rubric_path=json.dumps(rubric_images),
+                rubric_title=rubric_title
+            )
 
-    except HTTPException:
-        raise
+            db.add(new_rubric)
+            db.commit()
+            db.refresh(new_rubric)
 
-    except ValueError as e:
-        logger.warning("Validation error", extra={"error": str(e)})
-        raise HTTPException(status_code=400, detail=str(e))
+            yield send(
+                "completed",
+                "Done",
+                data=rubric_json_data
+            )
 
-    except Exception:
-        logger.exception("Failed to store rubric")
-        raise HTTPException(status_code=500, detail="Failed to process rubric")
+        except Exception as e:
+            yield send("error", str(e))
 
-    finally:
-        if db:
-            db.close()
+        finally:
+            if db:
+                db.close()
+            clean_upload_dir()
 
-        clean_upload_dir(exclude={"rubric-images"})
+    return StreamingResponse(event_stream(), media_type="text/plain")
 
 @router.get("/get-rubrics")
 async def get_rubrics(user_email: str = Depends(verify_token)):
