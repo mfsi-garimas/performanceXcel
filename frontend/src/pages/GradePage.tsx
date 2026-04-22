@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { gradeSubmission, getEvaluations } from "../api/gradingApi";
+import { gradeSubmission, getEvaluations, updateEvaluation } from "../api/gradingApi";
 import styles from "./GradePage.module.css";
 import ResultViewer from "../components/ResultViewer";
 import Layout from "../components/Layout";
@@ -16,6 +16,8 @@ const GradePage = () => {
   const [evaluations, setEvaluations] = useState<any[]>([]);
   const [selectedEvaluation, setSelectedEvaluation] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editedName, setEditedName] = useState("");
 
   useEffect(() => {
       const fetchData = async () => {
@@ -66,6 +68,27 @@ const GradePage = () => {
       setLoading(false);
     }
   };
+
+const handleSave = async (id: number) => {
+  try {
+    if (!editedName.trim()) return;
+
+    await updateEvaluation(id, editedName);
+
+    setEvaluations((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, student_name: editedName }
+          : item
+      )
+    );
+
+    setEditingId(null);
+  } catch (err: any) {
+    console.error("Failed to update name", err);
+    alert(err.message || "Update failed");
+  }
+};
 
   return (
     <Layout>
@@ -156,25 +179,61 @@ const GradePage = () => {
             </thead>
             <tbody>
               {evaluations.map((item, index) => {
-                const evalData = item.evaluation;
 
                 return (
                   <tr key={item.id}>
                     <td>{index + 1}</td>
-                    <td>Test</td>
+                    <td>{editingId === item.id ? (
+                    <input
+                      className={styles.editInput}
+                      value={editedName}
+                      onChange={(e) => setEditedName(e.target.value)}
+                    />
+                  ) : (
+                    item.student_name || "—"
+                  )}</td>
                     <td>
                       {new Date(item.created_date).toLocaleString()}
                     </td>
-                    <td>
-                      <button
-                        className={styles.viewBtn}
-                        onClick={() => {
-                          setSelectedEvaluation(item);
-                          setShowModal(true);
-                        }}
-                      >
-                        View
-                      </button>
+                    <td className={styles.actionCell}>
+                      {editingId === item.id ? (
+                        <>
+                          <button
+                            className={styles.saveBtn}
+                            onClick={() => handleSave(item.id)}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className={styles.cancelBtn}
+                            onClick={() => setEditingId(null)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className={styles.viewBtn}
+                            onClick={() => {
+                              setSelectedEvaluation(item);
+                              setShowModal(true);
+                            }}
+                          >
+                            View
+                          </button>
+
+                          <button
+                            className={styles.editBtn}
+                            onClick={() => {
+                              setEditingId(item.id);
+                              setEditedName(item.student_name || "");
+                            }}
+                          >
+                            Edit
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 );

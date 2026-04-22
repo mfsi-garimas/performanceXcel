@@ -12,6 +12,7 @@ class Evaluation(Base):
     rubric_id = Column(Integer, ForeignKey("rubrics.id"), nullable=True, index=True)
 
     evaluation = Column(String, nullable=False)
+    student_name = Column(String, nullable=False)
     student_submission = Column(String, nullable=True)
     created_date = Column(DateTime, default=datetime.utcnow, nullable=False)
 

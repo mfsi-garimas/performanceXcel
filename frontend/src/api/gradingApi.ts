@@ -71,3 +71,34 @@ export const getEvaluations = async () => {
 
   return res.json();
 };
+
+export const updateEvaluation = async (evalId: number, studentName?: string,) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("User not logged in");
+  }
+
+  const res = await fetch(`${API_URL}/update-evaluation/${evalId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      student_name: studentName,
+    }),
+  });
+
+  if (res.status === 401 ) {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+    return Promise.reject(new Error("Session expired"));
+  }
+
+  if (!res.ok) {
+    throw new Error("Failed to update evaluation");
+  }
+
+  return res.json();
+};

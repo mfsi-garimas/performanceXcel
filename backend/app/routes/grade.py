@@ -17,6 +17,7 @@ from app.models.evaluation import Evaluation
 from app.db.init_db import SessionLocal
 from datetime import datetime, timedelta
 from app.utils.jwt_handler import verify_token
+from app.schemas.evaluation import UpdateEvaluationRequest
 
 router = APIRouter()
 graph = build_graph()
@@ -42,6 +43,7 @@ async def get_all_evaluations(user_email: str = Depends(verify_token)):
                 "id": e.id,
                 "evaluation": e.evaluation,
                 "student_submission": e.student_submission,
+                "student_name": e.student_name,
                 "created_date": e.created_date,
 
                 "rubric": {
@@ -98,11 +100,14 @@ async def grade_submission(
         rubric_value = json.dumps(result["rubric_images"])
         student_submission_value = json.dumps(result["submission_images"])
 
+        student_name = os.path.splitext(submission_file.filename)[0]
+
         db = SessionLocal()
         new_eval = Evaluation(
             user_id=1,
             evaluation=evaluation_json,
             rubric_id=rubric_id,
+            student_name=student_name,
             student_submission=student_submission_value
         )
 
@@ -135,3 +140,46 @@ async def grade_submission(
             clean_upload_dir()
         except Exception:
             logger.warning("Failed to clean uploads directory")
+
+@router.put("/update-evaluation/{eval_id}")
+async def update_evaluation(
+    eval_id: int,
+    payload: UpdateEvaluationRequest,
+    user_email: str = Depends(verify_token)
+):
+    db = None
+
+    try:
+        db = SessionLocal()
+
+        user_id = 1  
+
+        evaluation = (
+            db.query(Evaluation)
+            .filter(Evaluation.id == eval_id, Evaluation.user_id == user_id)
+            .first()
+        )
+
+        if not evaluation:
+            raise HTTPException(status_code=404, detail="Evaluation not found")
+
+        evaluation.student_name = payload.student_name
+
+        db.commit()
+        db.refresh(evaluation)
+
+        return {
+            "status": "success",
+            "message": "Student name updated successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        logger.exception("Failed to update evaluation")
+        raise HTTPException(status_code=500, detail="Failed to update evaluation")
+
+    finally:
+        if db:
+            db.close()
