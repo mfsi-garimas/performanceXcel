@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { gradeSubmission, getEvaluations, updateEvaluation } from "../api/gradingApi";
 import styles from "./GradePage.module.css";
-import ResultViewer from "../components/ResultViewer";
+import ResultViewer from "./ResultViewer";
 import Layout from "../components/Layout";
 import {getRubrics} from "../api/rubricApi";
 
@@ -10,7 +10,6 @@ const GradePage = () => {
   const [rubrics, setRubrics] = useState<any[]>([]);
   const [submissionFile, setSubmissionFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState("");
   const [selectedRubricId, setSelectedRubricId] = useState<number | null>(null);
   const [evaluations, setEvaluations] = useState<any[]>([]);
@@ -55,11 +54,9 @@ const GradePage = () => {
 
     setLoading(true);
     setError("");
-    setResult(null);
 
     try {
       const res = await gradeSubmission(selectedRubricId, submissionFile);
-      setResult(res);
       setSubmissionFile(null);
       setSelectedRubricId(null);
     } catch (err: any) {

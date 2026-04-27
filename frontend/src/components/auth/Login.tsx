@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { login } from "../../api/auth";
-import styles from "./Login.module.css"; // 👈 important
-
+import styles from "./Login.module.css";
+import { jwtDecode } from "jwt-decode";
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +16,9 @@ const Login: React.FC = () => {
     try {
       const data = await login(email, password);
       localStorage.setItem("token", data.access_token);
+      const decoded: any = jwtDecode(data.access_token);
+      localStorage.setItem("role", decoded.role);
+
       window.location.href = "/evaluation";
     } catch (err: any) {
       setError(err.message || "Login failed");

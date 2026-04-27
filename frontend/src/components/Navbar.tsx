@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Navbar.module.css";
 import { useNavigate } from "react-router-dom";
 
@@ -6,7 +6,13 @@ import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
+  useEffect(() => {
+    const storedRole = localStorage.getItem("role");
+    setRole(storedRole);
+  }, []);
+  console.log(role)
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/";
@@ -21,6 +27,14 @@ const Navbar = () => {
       <div className={styles.right}>
         <button onClick={() => navigate("/evaluation")} className={styles.link}>Evaluate Submission</button>
         <button onClick={() => navigate("/rubric")} className={styles.link}>Manage Rubrics</button>
+        {role === "ADMIN" && (
+          <>
+            <button onClick={() => navigate("/users")} className={styles.link}>
+              Users
+            </button>
+          </>
+        )}
+        <button onClick={() => navigate("/settings")} className={styles.link}>Settings</button>
         <button className={styles.logout} onClick={handleLogout}>
           Logout
         </button>
@@ -33,11 +47,18 @@ const Navbar = () => {
         ☰
       </div>
 
-      {/* Mobile Menu */}
       {open && (
         <div className={styles.mobileMenu}>
           <button onClick={() => navigate("/evaluation")} className={styles.link}>Evaluate Submission</button>
           <button onClick={() => navigate("/rubric")} className={styles.link}>Manage Rubrics</button>
+          {role === "ADMIN" && (
+            <>
+              <button onClick={() => navigate("/users")} className={styles.link}>
+                Users
+              </button>
+            </>
+          )}
+          <button onClick={() => navigate("/settings")} className={styles.link}>Settings</button>
           <button className={styles.logout} onClick={handleLogout}>
             Logout
           </button>

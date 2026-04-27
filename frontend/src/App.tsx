@@ -5,7 +5,9 @@ import Login from "./components/auth/Login";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
-import RubricPage from "./pages/RubricPage";
+import RubricPage from "./pages/RubricStorePage";
+import UserPage from "./pages/UsersPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   return <BrowserRouter>
@@ -23,6 +25,22 @@ function App() {
           element={
             <ProtectedRoute>
               <RubricPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute roleRequired="ADMIN">
+              <UserPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />

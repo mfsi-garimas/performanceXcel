@@ -13,7 +13,6 @@
   z-index: 100;
 }
 
-/* Left */
 .left {
   display: flex;
   align-items: center;
@@ -24,14 +23,12 @@
   font-weight: 600;
 }
 
-/* Right (desktop) */
 .right {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/* Links */
 .link {
   background: none;
   border: none;
@@ -47,7 +44,6 @@
   background: #f3f4f6;
 }
 
-/* Logout */
 .logout {
   background: #ef4444;
   color: white;
@@ -57,7 +53,6 @@
   cursor: pointer;
 }
 
-/* Hamburger */
 .hamburger {
   display: none;
   font-size: 22px;
@@ -80,13 +75,12 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* 🔥 Responsive */
 @media (max-width: 768px) {
   .right {
-    display: none; /* hide desktop menu */
+    display: none; 
   }
 
   .hamburger {
-    display: block; /* show menu icon */
+    display: block;
   }
 }

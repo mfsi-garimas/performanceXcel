@@ -9,8 +9,9 @@ Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
 # Define user credentials
-email = "testuser@example.com"
+email = "testuser3@example.com"
 password = "Test1234!"  # plain password
+role="ADMIN"
 
 # Hash the password
 hashed_pw = hash_password(password)
@@ -23,7 +24,8 @@ else:
     # Create user object
     user = User(
         email=email,
-        hashed_password=hashed_pw
+        hashed_password=hashed_pw,
+        role=role
     )
 
     # Add to DB
