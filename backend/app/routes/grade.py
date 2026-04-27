@@ -18,6 +18,7 @@ from app.db.init_db import SessionLocal
 from datetime import datetime, timedelta
 from app.utils.jwt_handler import verify_token
 from app.schemas.evaluation import UpdateEvaluationRequest
+from app.models.user import User
 
 router = APIRouter()
 graph = build_graph()
@@ -102,9 +103,11 @@ async def grade_submission(
 
         student_name = os.path.splitext(submission_file.filename)[0]
 
+        current_user = db.query(User).filter(User.email == user_email).first()
+
         db = SessionLocal()
         new_eval = Evaluation(
-            user_id=1,
+            user_id=current_user.id,
             evaluation=evaluation_json,
             rubric_id=rubric_id,
             student_name=student_name,

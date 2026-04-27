@@ -12,6 +12,7 @@ from app.utils.jwt_handler import verify_token
 from app.config.log_config import logger
 from fastapi.responses import StreamingResponse
 import asyncio
+from app.models.user import User
 
 router = APIRouter()
 graph = build_graph()
@@ -71,8 +72,10 @@ async def create_rubric(
 
             db = SessionLocal()
 
+            current_user = db.query(User).filter(User.email == user_email).first()
+
             new_rubric = Rubric(
-                user_id=1,
+                user_id=current_user.id,
                 rubric_json=json.dumps(rubric_json_data),
                 rubric_path=json.dumps(rubric_images),
                 rubric_title=rubric_title
