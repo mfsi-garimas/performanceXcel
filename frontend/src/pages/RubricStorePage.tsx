@@ -129,7 +129,7 @@ const RubricStore = () => {
           {rubrics.length === 0 ? (
             <div className={styles.placeholder}>
               <h3>No rubrics yet</h3>
-              <p>Upload rubrics to see them here</p>
+              <p> Upload rubrics to see them here</p>
             </div>
           ) : (
             <div className={styles.grid}>

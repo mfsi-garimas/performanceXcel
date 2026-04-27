@@ -105,9 +105,10 @@ async def grade_submission(
 
         student_name = os.path.splitext(submission_file.filename)[0]
 
+        db = SessionLocal()
+        
         current_user = db.query(User).filter(User.email == user_email).first()
 
-        db = SessionLocal()
         new_eval = Evaluation(
             user_id=current_user.id,
             evaluation=evaluation_json,
