@@ -1,4 +1,4 @@
-import type { Response } from "../types/response";
+import type { Response } from "../types/types";
 
 const API_URL = import.meta.env.VITE_BACKEND_API_URL + "/api";
 

@@ -61,7 +61,7 @@ const Settings = () => {
       setStatus("Profile updated successfully");
       setPassword("");
     } catch (err) {
-      console.error("Update failed");
+      setError("Update failed");
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ const Settings = () => {
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>
-
+        {status && <div className={styles.success}>{status}</div>}
         {error && <div className={styles.error}>{error}</div>}
       </div>
     </Layout>

@@ -12,7 +12,6 @@ const Navbar = () => {
     const storedRole = localStorage.getItem("role");
     setRole(storedRole);
   }, []);
-  console.log(role)
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/";

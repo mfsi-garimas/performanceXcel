@@ -51,7 +51,6 @@ const RubricStore = () => {
 
   try {
     await uploadRubric(rubricFile, rubricTitle, (update) => {
-      console.log(update);
       if (update.message) {
         setStatus(update.message);
       }

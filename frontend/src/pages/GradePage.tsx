@@ -56,7 +56,7 @@ const GradePage = () => {
     setError("");
 
     try {
-      const res = await gradeSubmission(selectedRubricId, submissionFile);
+      await gradeSubmission(selectedRubricId, submissionFile);
       setSubmissionFile(null);
       setSelectedRubricId(null);
     } catch (err: any) {
