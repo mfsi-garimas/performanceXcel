@@ -108,7 +108,9 @@ async def get_rubrics(user_email: str = Depends(verify_token)):
     try:
         db = SessionLocal()
 
-        user_id = 1  
+        current_user = db.query(User).filter(User.email == user_email).first()
+
+        user_id = current_user.id
 
         rubrics = db.query(Rubric).filter(Rubric.user_id == user_id).all()
 
@@ -145,7 +147,9 @@ async def delete_rubric(
     try:
         db = SessionLocal()
 
-        user_id = 1  
+        current_user = db.query(User).filter(User.email == user_email).first()
+
+        user_id = current_user.id
 
         rubric = (
             db.query(Rubric)

@@ -34,7 +34,9 @@ async def get_all_evaluations(user_email: str = Depends(verify_token)):
     try:
         db = SessionLocal()
 
-        user_id = 1  
+        current_user = db.query(User).filter(User.email == user_email).first()
+
+        user_id = current_user.id 
 
         evaluations = db.query(Evaluation).filter(Evaluation.user_id == user_id).all()
 
@@ -155,7 +157,9 @@ async def update_evaluation(
     try:
         db = SessionLocal()
 
-        user_id = 1  
+        current_user = db.query(User).filter(User.email == user_email).first()
+
+        user_id = current_user.id
 
         evaluation = (
             db.query(Evaluation)
