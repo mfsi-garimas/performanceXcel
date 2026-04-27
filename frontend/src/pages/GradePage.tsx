@@ -18,20 +18,20 @@ const GradePage = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editedName, setEditedName] = useState("");
 
+  const fetchDataEvaluations = async () => {
+    try {
+      const res = await getEvaluations();
+      setEvaluations(res.data);
+    } catch (err) {
+      console.error("Failed to load rubrics");
+    }
+  };
+
   useEffect(() => {
       const fetchData = async () => {
         try {
           const res = await getRubrics();
           setRubrics(res.data);
-        } catch (err) {
-          console.error("Failed to load rubrics");
-        }
-      };
-
-      const fetchDataEvaluations = async () => {
-        try {
-          const res = await getEvaluations();
-          setEvaluations(res.data);
         } catch (err) {
           console.error("Failed to load rubrics");
         }
@@ -59,6 +59,7 @@ const GradePage = () => {
       await gradeSubmission(selectedRubricId, submissionFile);
       setSubmissionFile(null);
       setSelectedRubricId(null);
+      fetchDataEvaluations();
     } catch (err: any) {
       setError(err?.message || "Something went wrong");
     } finally {
