@@ -32,7 +32,7 @@ const GradePage = () => {
       setEvaluations(res.data);
 
       const pendingExists = res.some(
-        (item: any) => item.status === "pending"
+        (item: any) => item.status !== "completed"
       );
 
       setHasPending(pendingExists);

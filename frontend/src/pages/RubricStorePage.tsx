@@ -41,7 +41,7 @@ const RubricStore = () => {
 
   const handleSubmit = async () => {
   if (!rubricFile) {
-    setError("Please upload both rubric and submission");
+    setError("Please upload rubric");
     return;
   }
 
