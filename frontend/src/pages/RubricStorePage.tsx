@@ -165,7 +165,12 @@ const RubricStore = () => {
 
                     <button
                       className={styles.deleteBtn}
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => {
+                        const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+                        if (confirmDelete) {
+                          handleDelete(item.id);
+                        }
+                      }}
                     >
                       🗑
                     </button>
