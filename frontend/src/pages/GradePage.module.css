@@ -308,6 +308,15 @@
   cursor: pointer;
 }
 
+.retryBtn {
+  background: #0b9df5;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .saveBtn {
   background: #10b981;
   color: white;

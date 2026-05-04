@@ -114,7 +114,7 @@
   width: 100%;
   height: 140px;
   object-fit: cover;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   cursor: pointer;
   transition: 0.2s;
 }
@@ -253,7 +253,7 @@
   background: #ef4444;
   color: white;
   padding: 6px 10px;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   border: none;
 }
 

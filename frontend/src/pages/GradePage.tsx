@@ -274,9 +274,9 @@ const GradePage = () => {
               </div>
             </div>
           ) : (
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
-                <thead>
+            <div className="table-responsive">
+              <table className="table table-hover align-middle">
+                <thead className="table-light">
                   <tr>
                     <th>ID</th>
                     <th>Student Name</th>

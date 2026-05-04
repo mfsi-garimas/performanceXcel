@@ -213,9 +213,9 @@ const UsersPage = () => {
               <p>Create users to see them here</p>
             </div>
           ) : (
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
-                <thead>
+            <div className="table-responsive">
+              <table className="table table-hover align-middle">
+                <thead className="table-light">
                   <tr>
                     <th>#</th>
                     <th>Name</th>
@@ -352,7 +352,7 @@ const UsersPage = () => {
                               className={styles.deleteBtn}
                               onClick={() => handleDelete(user.id)}
                             >
-                              🗑
+                              Remove
                             </button>
                           </>
                         )}

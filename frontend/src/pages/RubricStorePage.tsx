@@ -172,7 +172,7 @@ const RubricStore = () => {
                         }
                       }}
                     >
-                      🗑
+                      Remove
                     </button>
 
                   </div>
