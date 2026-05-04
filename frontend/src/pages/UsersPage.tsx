@@ -312,7 +312,7 @@ const UsersPage = () => {
                       </td>
 
                       <td>
-                        {new Date(user.created_date).toLocaleDateString("en-GB", {
+                        {new Date(user.created_date).toLocaleDateString("en-US", {
                           day: "numeric",
                           month: "long",
                           year: "numeric",

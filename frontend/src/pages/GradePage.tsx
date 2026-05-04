@@ -115,7 +115,7 @@ const GradePage = () => {
   const handleRetry = async (id: number) => {
     try {
       await retryEvaluation(id);
-      fetchDataEvaluations(); // refresh list
+      fetchDataEvaluations(); 
     } catch (err) {
       console.error("Retry failed", err);
       alert("Retry failed");
@@ -305,7 +305,7 @@ const GradePage = () => {
                       <td>{renderStatusBadge(item.status)}</td>
 
                       <td>
-                        {new Date(item.created_date).toLocaleDateString("en-GB", {
+                        {new Date(item.created_date).toLocaleDateString("en-US", {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
