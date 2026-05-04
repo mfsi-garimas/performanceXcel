@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from app.utils.security import hash_password, hash_token
 from app.schemas.auth import LoginRequest, ForgetPasswordRequest
 from app.utils.email import send_email
+import os 
 
 router = APIRouter()
 
@@ -48,9 +49,9 @@ def forgot_password(data: ForgetPasswordRequest, db: Session = Depends(get_db)):
     user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=15)
     db.commit()
 
-    reset_link = f"http://localhost:5173/reset-password?token={raw_token}"
+    domain = os.getenv("DOMAIN")
 
-    print(reset_link)
+    reset_link = f"{domain}/reset-password?token={raw_token}"
 
     send_email(user.email, reset_link)
 
