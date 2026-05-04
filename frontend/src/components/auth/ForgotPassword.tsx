@@ -80,6 +80,10 @@ const ForgotPassword: React.FC = () => {
             >
               {loading ? "Sending..." : "Send Reset Link"}
             </button>
+
+            <div className={styles.forgot}>
+              <a href="/">Login to your account</a>
+            </div>
           </form>
         </div>
       </div>
