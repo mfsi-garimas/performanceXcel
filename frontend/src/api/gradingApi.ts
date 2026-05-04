@@ -3,13 +3,16 @@ import type { Response } from "../types/types";
 const API_URL = import.meta.env.VITE_BACKEND_API_URL + "/api";
 
 export const gradeSubmission = async (
-  selectedRubricId?: number,
-  submissionFile?: File
+  rubricId: number,
+  files: File[]
 ): Promise<Response> => {
   const formData = new FormData();
 
-  if (selectedRubricId) formData.append("rubric_id", String(selectedRubricId));
-  if (submissionFile) formData.append("submission_file", submissionFile);
+  formData.append("rubric_id", String(rubricId));
+
+  files.forEach((file) => {
+    formData.append("submission_files", file);
+  });
 
   const token = localStorage.getItem("token");
 
@@ -17,7 +20,7 @@ export const gradeSubmission = async (
     throw new Error("User not logged in");
   }
 
-  const response = await fetch(`${API_URL}/evaluate-submission`, {
+  const response = await fetch(`${API_URL}/evaluate-submissions`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -27,10 +30,13 @@ export const gradeSubmission = async (
 
   const data = await response.json();
 
-  if (response.status === 401 || data?.detail === "Token is invalid or expired") {
+  if (
+    response.status === 401 ||
+    data?.detail === "Token is invalid or expired"
+  ) {
     localStorage.removeItem("token");
     window.location.href = "/";
-    return Promise.reject(new Error("Session expired"));
+    throw new Error("Session expired");
   }
 
   if (!response.ok) {
@@ -101,4 +107,48 @@ export const updateEvaluation = async (evalId: number, studentName?: string,) =>
   }
 
   return res.json();
+};
+
+export const retryEvaluation = async (id: number) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("User not logged in");
+  }
+
+  const res = await fetch(`${API_URL}/retry-evaluation/${id}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  let data: any = {};
+  try {
+    data = await res.json();
+  } catch {
+  }
+
+  if (
+    res.status === 401 ||
+    data?.detail === "Token is invalid or expired"
+  ) {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+    throw new Error("Session expired");
+  }
+
+  if (!res.ok) {
+    let message = "Retry failed";
+
+    if (Array.isArray(data?.detail)) {
+      message = data.detail[0]?.msg;
+    } else if (typeof data?.detail === "string") {
+      message = data.detail;
+    }
+
+    throw new Error(message);
+  }
+
+  return data;
 };

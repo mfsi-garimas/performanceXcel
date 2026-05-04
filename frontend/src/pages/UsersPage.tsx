@@ -16,7 +16,8 @@ const UsersPage = () => {
     username: "",
     email: "",
     password: "",
-    role: "teacher",
+    confirm_password:"",
+    role: "TEACHER",
   });
 
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -45,6 +46,16 @@ const UsersPage = () => {
       return;
     }
 
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    if (form.password !== form.confirm_password) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setStatus("");
@@ -65,6 +76,7 @@ const UsersPage = () => {
         username: "",
         email: "",
         password: "",
+        confirm_password:"",
         role: "TEACHER",
       });
     } catch (err: any) {
@@ -155,6 +167,19 @@ const UsersPage = () => {
             </div>
 
             <div className={styles.field}>
+              <label className={styles.label}>Confirm Password</label>
+              <input
+                type="password"
+                value={form.confirm_password}
+                onChange={(e) =>
+                  setForm({ ...form, confirm_password: e.target.value })
+                }
+                className={styles.input}
+                placeholder="Enter password"
+              />
+            </div>
+
+            <div className={styles.field}>
               <label className={styles.label}>Role</label>
               <select
                 value={form.role}
@@ -188,149 +213,151 @@ const UsersPage = () => {
               <p>Create users to see them here</p>
             </div>
           ) : (
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Password</th>
-                  <th>Role</th>
-                  <th>Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {users.map((user, index) => (
-                  <tr key={user.id}>
-                    <td>{index + 1}</td>
-
-                    <td>
-                      {editingId === user.id ? (
-                        <input
-                          className={styles.tableInput}
-                          value={editedUser.username}
-                          onChange={(e) =>
-                            setEditedUser({
-                              ...editedUser,
-                              username: e.target.value,
-                            })
-                          }
-                        />
-                      ) : (
-                        user.username
-                      )}
-                    </td>
-
-                    <td>
-                      {editingId === user.id ? (
-                        <input
-                          className={styles.tableInput}
-                          value={editedUser.email}
-                          onChange={(e) =>
-                            setEditedUser({
-                              ...editedUser,
-                              email: e.target.value,
-                            })
-                          }
-                        />
-                      ) : (
-                        user.email
-                      )}
-                    </td>
-
-                    <td>
-                      {editingId === user.id ? (
-                        <input
-                          className={styles.tableInput}
-                          value={editedUser.password}
-                          onChange={(e) =>
-                            setEditedUser({
-                              ...editedUser,
-                              password: e.target.value,
-                            })
-                          }
-                        />
-                      ) : (
-                        "Password"
-                      )}
-                    </td>
-
-                    <td>
-                      {editingId === user.id ? (
-                        <select
-                          className={styles.tableInput}
-                          value={editedUser.role}
-                          onChange={(e) =>
-                            setEditedUser({
-                              ...editedUser,
-                              role: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="TEACHER">Teacher</option>
-                          <option value="ADMIN">Admin</option>
-                        </select>
-                      ) : (
-                        <span
-                          className={
-                            user.role === "admin"
-                              ? styles.adminBadge
-                              : styles.teacherBadge
-                          }
-                        >
-                          {user.role}
-                        </span>
-                      )}
-                    </td>
-
-                    <td>
-                      {new Date(user.created_date).toLocaleString()}
-                    </td>
-
-                    <td className={styles.actions}>
-                      {editingId === user.id ? (
-                        <>
-                          <button
-                            className={styles.saveBtn}
-                            onClick={() => handleSave(user.id)}
-                          >
-                            Save
-                          </button>
-
-                          <button
-                            className={styles.cancelBtn}
-                            onClick={() => setEditingId(null)}
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            className={styles.editBtn}
-                            onClick={() => {
-                              setEditingId(user.id);
-                              setEditedUser(user);
-                            }}
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            className={styles.deleteBtn}
-                            onClick={() => handleDelete(user.id)}
-                          >
-                            🗑
-                          </button>
-                        </>
-                      )}
-                    </td>
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Date</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {users.map((user, index) => (
+                    <tr key={user.id}>
+                      <td>{index + 1}</td>
+
+                      <td>
+                        {editingId === user.id ? (
+                          <input
+                            className={styles.tableInput}
+                            value={editedUser.username}
+                            onChange={(e) =>
+                              setEditedUser({
+                                ...editedUser,
+                                username: e.target.value,
+                              })
+                            }
+                          />
+                        ) : (
+                          user.username
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === user.id ? (
+                          <input
+                            className={styles.tableInput}
+                            value={editedUser.email}
+                            onChange={(e) =>
+                              setEditedUser({
+                                ...editedUser,
+                                email: e.target.value,
+                              })
+                            }
+                          />
+                        ) : (
+                          user.email
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === user.id ? (
+                          <input
+                            className={styles.tableInput}
+                            value={editedUser.password}
+                            onChange={(e) =>
+                              setEditedUser({
+                                ...editedUser,
+                                password: e.target.value,
+                              })
+                            }
+                          />
+                        ) : (
+                          "Password"
+                        )}
+                      </td>
+
+                      <td>
+                        {editingId === user.id ? (
+                          <select
+                            className={styles.tableInput}
+                            value={editedUser.role}
+                            onChange={(e) =>
+                              setEditedUser({
+                                ...editedUser,
+                                role: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="TEACHER">Teacher</option>
+                            <option value="ADMIN">Admin</option>
+                          </select>
+                        ) : (
+                          <span
+                            className={
+                              user.role === "ADMIN"
+                                ? styles.adminBadge
+                                : styles.teacherBadge
+                            }
+                          >
+                            {user.role}
+                          </span>
+                        )}
+                      </td>
+
+                      <td>
+                        {new Date(user.created_date).toLocaleString()}
+                      </td>
+
+                      <td className={styles.actions}>
+                        {editingId === user.id ? (
+                          <>
+                            <button
+                              className={styles.saveBtn}
+                              onClick={() => handleSave(user.id)}
+                            >
+                              Save
+                            </button>
+
+                            <button
+                              className={styles.cancelBtn}
+                              onClick={() => setEditingId(null)}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              className={styles.editBtn}
+                              onClick={() => {
+                                setEditingId(user.id);
+                                setEditedUser(user);
+                              }}
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              className={styles.deleteBtn}
+                              onClick={() => handleDelete(user.id)}
+                            >
+                              🗑
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

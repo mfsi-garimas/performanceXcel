@@ -117,7 +117,7 @@ async def delete_rubric(
             db.close()
 
 @router.put("/update-user/{user_id}")
-async def update_evaluation(
+async def update_user(
     user_id: int,
     payload: UserUpdateRequest,
     user_email: str = Depends(verify_token)

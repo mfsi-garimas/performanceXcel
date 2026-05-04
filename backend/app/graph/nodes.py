@@ -7,9 +7,13 @@ from app.config.log_config import logger
 from app.db.init_db import SessionLocal
 from app.models.rubric import Rubric
 import json
+from app.models.evaluation import Evaluation
+from app.db.init_db import SessionLocal
 
 def load_rubric_node(state: dict) -> dict:
     rubric_id = state.get("rubric_id")
+
+    update_status(state["evaluation_id"], "Fetching rubric data")
 
     db = SessionLocal()
 
@@ -27,6 +31,8 @@ def ocr_node(state: dict) -> dict:
     try:
         logger.info("Starting OCR node", extra={"state_keys": list(state.keys())})
 
+        update_status(state["evaluation_id"], "Extracting data from student submission")
+
         # Rubric OCR
         if not state.get("rubric_id") and state.get("rubric_images"):
             text_lines = []
@@ -39,6 +45,7 @@ def ocr_node(state: dict) -> dict:
 
         # Submission OCR
         if state.get("submission_images"):
+            logger.info("Starting Submission OCR", extra={"state_keys": list(state.keys())})
             text_lines = []
             for img in state["submission_images"]:
                 ocr_output = run_ocr(img)
@@ -111,6 +118,9 @@ def evaluation_node(state: dict) -> dict:
     """
     try:
         print(state)
+
+        update_status(state["evaluation_id"], "Evaluating student assignment")
+
         rubric_json = state.get("rubric_json")
 
         if isinstance(rubric_json, str):
@@ -135,3 +145,14 @@ def evaluation_node(state: dict) -> dict:
     except Exception as e:
         logger.exception("Evaluation node failed", extra={"state_keys": list(state.keys())})
         raise
+
+
+def update_status(evaluation_id, status):
+    db = SessionLocal()
+    try:
+        eval_obj = db.query(Evaluation).get(evaluation_id)
+        if eval_obj:
+            eval_obj.status = status
+            db.commit()
+    finally:
+        db.close()

@@ -8,6 +8,7 @@ const Settings = () => {
   const [userId, setUserId] = useState<number | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
@@ -49,6 +50,8 @@ const Settings = () => {
       return;
     }
 
+    if (!checkNewPassword()) return;
+
     setLoading(true);
 
     try {
@@ -60,11 +63,31 @@ const Settings = () => {
 
       setStatus("Profile updated successfully");
       setPassword("");
+      setConfirmPassword("");
+      setError("");
     } catch (err) {
       setError("Update failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const checkNewPassword = () => {
+    if (!password) {
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return false;
+    }
+
+    return true;
   };
 
   return (
@@ -86,6 +109,16 @@ const Settings = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Leave empty to keep current password"
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Leave empty to keep current password"
           />
         </div>

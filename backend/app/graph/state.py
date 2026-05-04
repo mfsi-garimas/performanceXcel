@@ -10,6 +10,8 @@ class EvalState(TypedDict):
 
     rubric_id: Optional[int]
 
+    evaluation_id: Optional[int]
+
     rubric_images: Optional[List[str]]
     submission_images: Optional[List[str]]
 

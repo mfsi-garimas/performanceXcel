@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styles from "./Navbar.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 
 const Navbar = () => {
@@ -17,26 +17,58 @@ const Navbar = () => {
     window.location.href = "/";
   };
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <div className={styles.navbar}>
       <div className={styles.left}>
-        <h2 className={styles.logo}>PerformanceXcel</h2>
+        <img
+          src="/performanceXcel-logo.png"
+          alt="PerformanceXcel"
+          className={styles.logoImage}
+        />
       </div>
 
       <div className={styles.right}>
-        <button onClick={() => navigate("/evaluation")} className={styles.link}>Evaluate Submission</button>
-        <button onClick={() => navigate("/rubric")} className={styles.link}>Manage Rubrics</button>
+        <button className={`${styles.link} ${isActive("/rubric") ? styles.active : ""}`} onClick={() => navigate("/rubric")}>Rubrics</button>
+        <button onClick={() => navigate("/evaluation")} className={`${styles.link} ${isActive("/evaluation") ? styles.active : ""}`}>Submissions</button>
         {role === "ADMIN" && (
           <>
-            <button onClick={() => navigate("/users")} className={styles.link}>
+            <button onClick={() => navigate("/users")} className={`${styles.link} ${isActive("/users") ? styles.active : ""}`}>
               Users
             </button>
           </>
         )}
-        <button onClick={() => navigate("/settings")} className={styles.link}>Settings</button>
-        <button className={styles.logout} onClick={handleLogout}>
-          Logout
-        </button>
+        <div className={styles.avatarWrapper}>
+          <div
+            className={styles.avatar}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            👤
+          </div>
+
+          {menuOpen && (
+            <div className={styles.dropdown}>
+              <button className={styles.link}
+                onClick={() => {
+                  navigate("/settings");
+                  setMenuOpen(false);
+                }}
+              >
+                Settings
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className={styles.logoutItem}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div
@@ -48,8 +80,8 @@ const Navbar = () => {
 
       {open && (
         <div className={styles.mobileMenu}>
-          <button onClick={() => navigate("/evaluation")} className={styles.link}>Evaluate Submission</button>
-          <button onClick={() => navigate("/rubric")} className={styles.link}>Manage Rubrics</button>
+          <button onClick={() => navigate("/evaluation")} className={styles.link}>Evaluations</button>
+          <button onClick={() => navigate("/rubric")} className={styles.link}>Rubrics</button>
           {role === "ADMIN" && (
             <>
               <button onClick={() => navigate("/users")} className={styles.link}>

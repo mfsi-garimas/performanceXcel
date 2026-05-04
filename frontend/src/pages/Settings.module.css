@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 80vh;
+  font-size: 15px;
 }
 
 .card {
@@ -28,7 +29,7 @@
 .saveBtn {
   width: 100%;
   padding: 10px;
-  background: #3b82f6;
+  background: #6366f1;
   color: white;
   border: none;
   border-radius: 8px;
@@ -97,7 +98,7 @@
 
 .saveBtn {
   padding: 10px 16px;
-  background-color: #0078d4;
+  background-color: #6366f1;
   color: white;
   border: none;
   border-radius: 6px;

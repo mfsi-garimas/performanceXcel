@@ -72,18 +72,25 @@ export const updateUser = async (
   password?: string,
   role?: string
 ) => {
+
+  const payload: any = {};
+
+  if (username !== undefined) payload.username = username;
+
+  if (email && email.includes("@") && email.includes(".")) {
+    payload.email = email;
+  }
+
+  if (password) payload.password = password;
+  if (role) payload.role = role;
+
   const res = await fetch(`${API_URL}/update-user/${userId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({
-      username,
-      email,
-      password,
-      role,
-    }),
+    body: JSON.stringify(payload),
   });
 
   if (res.status === 401) {

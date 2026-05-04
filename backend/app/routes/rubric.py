@@ -97,7 +97,7 @@ async def create_rubric(
         finally:
             if db:
                 db.close()
-            clean_upload_dir()
+            # clean_upload_dir()
 
     return StreamingResponse(event_stream(), media_type="text/plain")
 
