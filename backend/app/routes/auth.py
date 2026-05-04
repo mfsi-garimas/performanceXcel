@@ -52,7 +52,7 @@ def forgot_password(data: ForgetPasswordRequest, db: Session = Depends(get_db)):
 
     print(reset_link)
 
-    # send_email(user.email, reset_link)
+    send_email(user.email, reset_link)
 
     return {"message": "Reset link sent"}
 

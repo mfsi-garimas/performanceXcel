@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { forgotPassword } from "../../api/auth";
-import styles from "./Login.module.css"; // 👈 reuse same styles
+import styles from "./Login.module.css";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
