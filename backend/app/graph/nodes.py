@@ -31,7 +31,9 @@ def ocr_node(state: dict) -> dict:
     try:
         logger.info("Starting OCR node", extra={"state_keys": list(state.keys())})
 
-        update_status(state["evaluation_id"], "Extracting data from student submission")
+        evaluation_id = state.get("evaluation_id")
+        if evaluation_id:
+            update_status(evaluation_id, "Extracting data from student submission")
 
         # Rubric OCR
         if not state.get("rubric_id") and state.get("rubric_images"):
@@ -119,7 +121,9 @@ def evaluation_node(state: dict) -> dict:
     try:
         print(state)
 
-        update_status(state["evaluation_id"], "Evaluating student assignment")
+        evaluation_id = state.get("evaluation_id")
+        if evaluation_id:
+            update_status(evaluation_id, "Extracting data from student submission")
 
         rubric_json = state.get("rubric_json")
 
