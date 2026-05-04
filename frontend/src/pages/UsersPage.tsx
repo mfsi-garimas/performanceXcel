@@ -99,13 +99,13 @@ const UsersPage = () => {
 
   const handleSave = async (id: number) => {
     try {
-      await updateUser(
-        id,
-        editedUser.username,
-        editedUser.email,
-        editedUser.password,
-        editedUser.role
-      );
+
+      await updateUser(id, {
+        username: editedUser.username,
+        email: editedUser.email,
+        password: editedUser.password,
+        role: editedUser.role
+      });
 
       setUsers((prev) =>
         prev.map((u) =>

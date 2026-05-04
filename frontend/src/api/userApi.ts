@@ -67,22 +67,30 @@ export const removeUser = async (userId: number) => {
 
 export const updateUser = async (
   userId: number,
-  username?: string,
-  email?: string,
-  password?: string,
-  role?: string
+  data: {
+    username?: string;
+    email?: string;
+    password?: string;
+    role?: string;
+  }
 ) => {
-
   const payload: any = {};
 
-  if (username !== undefined) payload.username = username;
-
-  if (email && email.includes("@") && email.includes(".")) {
-    payload.email = email;
+  if (data.username !== undefined && data.username !== "") {
+    payload.username = data.username;
   }
 
-  if (password) payload.password = password;
-  if (role) payload.role = role;
+  if (data.email !== undefined && data.email !== "") {
+    payload.email = data.email;
+  }
+
+  if (typeof data.password === "string" && data.password.trim() !== "") {
+    payload.password = data.password;
+  }
+
+  if (data.role !== undefined && data.role !== "") {
+    payload.role = data.role;
+  }
 
   const res = await fetch(`${API_URL}/update-user/${userId}`, {
     method: "PUT",

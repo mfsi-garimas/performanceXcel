@@ -55,11 +55,10 @@ const Settings = () => {
     setLoading(true);
 
     try {
-      await updateUser(
-        userId,
+      await updateUser(userId, {
         username,
-        password || undefined,
-      );
+        password
+      });
 
       setStatus("Profile updated successfully");
       setPassword("");
