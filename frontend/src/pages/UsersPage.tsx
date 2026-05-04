@@ -312,7 +312,11 @@ const UsersPage = () => {
                       </td>
 
                       <td>
-                        {new Date(user.created_date).toLocaleString()}
+                        {new Date(user.created_date).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
                       </td>
 
                       <td className={styles.actions}>

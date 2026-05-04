@@ -305,7 +305,11 @@ const GradePage = () => {
                       <td>{renderStatusBadge(item.status)}</td>
 
                       <td>
-                        {new Date(item.created_date).toLocaleString()}
+                        {new Date(item.created_date).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
                       </td>
 
                       <td className={styles.actionCell}>
