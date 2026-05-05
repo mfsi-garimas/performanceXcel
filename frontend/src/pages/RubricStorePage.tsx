@@ -58,7 +58,7 @@ const RubricStore = () => {
       }
 
       if (update.stage === "completed" && update.data) {
-        setStatus("Done");
+        setStatus(update.message);
       }
 
       if (update.stage === "error") {
