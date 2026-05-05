@@ -19,7 +19,7 @@ const Login: React.FC = () => {
       const decoded: any = jwtDecode(data.access_token);
       localStorage.setItem("role", decoded.role);
 
-      window.location.href = "/evaluation";
+      window.location.href = "/rubric";
     } catch (err: any) {
       setError(err.message || "Login failed");
     } finally {

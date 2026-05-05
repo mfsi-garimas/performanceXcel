@@ -55,6 +55,7 @@ async def get_all_evaluations(user_email: str = Depends(verify_token)):
                 "rubric": {
                     "title": e.rubric.rubric_title if e.rubric else None,
                     "rubric_path": e.rubric.rubric_path if e.rubric else None,
+                    "rubric_id": e.rubric.id if e.rubric else None,
                 }
             })
 

@@ -24,6 +24,7 @@ const GradePage = () => {
   const [editedName, setEditedName] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [hasPending, setHasPending] = useState(false);
+  const [filterRubricId, setFilterRubricId] = useState<number | null>(null);
 
 
   const fetchDataEvaluations = async () => {
@@ -31,7 +32,7 @@ const GradePage = () => {
       const res = await getEvaluations();
       setEvaluations(res.data);
 
-      const pendingExists = res.some(
+      const pendingExists = res.data.some(
         (item: any) => item.status !== "completed"
       );
 
@@ -55,11 +56,12 @@ const GradePage = () => {
     fetchDataEvaluations();
 
     if (!hasPending) return;
+    console.log(hasPending)
 
     const interval = setInterval(fetchDataEvaluations, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [hasPending]);
 
   const handleSubmit = async () => {
     if (!selectedRubricId) {
@@ -185,6 +187,10 @@ const GradePage = () => {
     );
   };
 
+  const filteredEvaluations = filterRubricId
+  ? evaluations.filter((e) => e.rubric.rubric_id === filterRubricId)
+  : evaluations;
+
   return (
     <Layout>
       <div className={styles.wrapper}>
@@ -274,11 +280,41 @@ const GradePage = () => {
               </div>
             </div>
           ) : (
+            <>
+            <div style={{ marginBottom: "12px", display: "flex", gap: "10px" }}>
+              <select
+                className={styles.input}
+                style={{ maxWidth: "250px" }}
+                value={filterRubricId ?? ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setFilterRubricId(val ? Number(val) : null);
+                }}
+              >
+                <option value="">All Rubrics</option>
+                {rubrics.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.rubric_title}
+                  </option>
+                ))}
+              </select>
+
+              {filterRubricId && (
+                <button
+                  className="btn btn-outline-secondary btn-sm" style={{ maxWidth: "max-content"}}
+                  onClick={() => setFilterRubricId(null)}
+                >
+                  Clear Filter
+                </button>
+              )}
+
+            </div>
             <div className="table-responsive">
               <table className="table table-hover align-middle">
                 <thead className="table-light">
                   <tr>
                     <th>ID</th>
+                    <th>Rubric</th>
                     <th>Student Name</th>
                     <th>Status</th>
                     <th>Date</th>
@@ -286,9 +322,13 @@ const GradePage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {evaluations.map((item, index) => (
+                  {filteredEvaluations.map((item, index) => (
                     <tr key={item.id}>
                       <td>{index + 1}</td>
+
+                      <td>
+                        {item.rubric.title}
+                      </td>
 
                       <td>
                         {editingId === item.id ? (
@@ -367,6 +407,7 @@ const GradePage = () => {
                 </tbody>
             </table>
             </div>
+            </>
           )}
         </div>
       </div>
