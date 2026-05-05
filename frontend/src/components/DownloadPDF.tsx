@@ -1,0 +1,50 @@
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import getFileName from "./GenerateRandomFileName";
+
+type Props = {
+    targetRef: React.RefObject<HTMLDivElement | null>;
+};
+
+const DownloadPDFButton = ({ targetRef }: Props) => {
+  const fileName = getFileName();
+  const handleDownload = async () => {
+    if (!targetRef.current) return;
+
+    const canvas = await html2canvas(targetRef.current, {
+      scale: 2,
+      useCORS: true,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const imgWidth = 210;
+    const pageHeight = 297;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save(fileName+".pdf");
+  };
+
+  return (
+    <button className="btn btn-primary" onClick={handleDownload} style={{ width: "fit-content",display: "block"}}>
+      Download PDF
+    </button>
+  );
+};
+
+export default DownloadPDFButton;

@@ -10,6 +10,7 @@ import styles from "./GradePage.module.css";
 import ResultViewer from "./ResultViewer";
 import Layout from "../components/Layout";
 import { getRubrics } from "../api/rubricApi";
+import DownloadPDFButton from "../components/DownloadPDF";
 
 const GradePage = () => {
   const [rubrics, setRubrics] = useState<any[]>([]);
@@ -27,6 +28,7 @@ const GradePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [hasPending, setHasPending] = useState(false);
   const [filterRubricId, setFilterRubricId] = useState<number | null>(null);
+  const resultRef = useRef<HTMLDivElement | null>(null);
 
 
   const fetchDataEvaluations = async () => {
@@ -450,7 +452,13 @@ const GradePage = () => {
               ✖
             </button>
 
+            <DownloadPDFButton
+              targetRef={resultRef}
+            />
+
+            <div ref={resultRef}>
             <ResultViewer data={selectedEvaluation.evaluation} />
+          </div>
           </div>
         </div>
       )}
