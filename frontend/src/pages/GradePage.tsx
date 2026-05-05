@@ -11,6 +11,7 @@ import ResultViewer from "./ResultViewer";
 import Layout from "../components/Layout";
 import { getRubrics } from "../api/rubricApi";
 import DownloadPDFButton from "../components/DownloadPDF";
+import DownloadDocButton from "../components/DownloadWordDoc";
 
 const GradePage = () => {
   const [rubrics, setRubrics] = useState<any[]>([]);
@@ -453,6 +454,10 @@ const GradePage = () => {
             </button>
 
             <DownloadPDFButton
+              targetRef={resultRef}
+            />
+
+            <DownloadDocButton
               targetRef={resultRef}
             />
 

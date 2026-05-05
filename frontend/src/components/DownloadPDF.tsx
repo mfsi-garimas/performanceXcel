@@ -7,8 +7,8 @@ type Props = {
 };
 
 const DownloadPDFButton = ({ targetRef }: Props) => {
-  const fileName = getFileName();
   const handleDownload = async () => {
+    const fileName = getFileName();
     if (!targetRef.current) return;
 
     const canvas = await html2canvas(targetRef.current, {
@@ -41,7 +41,7 @@ const DownloadPDFButton = ({ targetRef }: Props) => {
   };
 
   return (
-    <button className="btn btn-primary" onClick={handleDownload} style={{ width: "fit-content",display: "block"}}>
+    <button className="btn btn-primary" onClick={handleDownload} style={{ width: "fit-content",marginRight: "10px"}}>
       Download PDF
     </button>
   );
