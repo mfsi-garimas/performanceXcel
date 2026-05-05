@@ -231,3 +231,55 @@ async def retry_evaluation(
     finally:
         if db:
             db.close()
+
+@router.delete("/remove-evaluation/{eval_id}")
+async def delete_evaluation(
+    eval_id: int,
+    user_email: str = Depends(verify_token)
+):
+    db = None
+
+    try:
+        db = SessionLocal()
+
+        current_user = db.query(User).filter(User.email == user_email).first()
+
+        user_id = current_user.id
+
+        evaluation = (
+            db.query(Evaluation)
+            .filter(Evaluation.id == eval_id, Evaluation.user_id == user_id)
+            .first()
+        )
+
+        if not evaluation:
+            raise HTTPException(status_code=404, detail="Evaluation not found")
+
+        try:
+            paths = json.loads(evaluation.student_submission or "[]")
+
+            for p in paths:
+                if os.path.exists(p):
+                    os.remove(p)
+
+        except Exception:
+            logger.warning("Failed to delete evaluation files from disk")
+
+        db.delete(evaluation)
+        db.commit()
+
+        return {
+            "status": "success",
+            "message": "Evaluation deleted successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        logger.exception("Failed to delete rubric")
+        raise HTTPException(status_code=500, detail="Failed to delete rubric")
+
+    finally:
+        if db:
+            db.close()

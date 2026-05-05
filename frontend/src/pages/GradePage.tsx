@@ -3,7 +3,8 @@ import {
   gradeSubmission,
   getEvaluations,
   updateEvaluation,
-  retryEvaluation
+  retryEvaluation,
+  removeEvaluation
 } from "../api/gradingApi";
 import styles from "./GradePage.module.css";
 import ResultViewer from "./ResultViewer";
@@ -15,6 +16,7 @@ const GradePage = () => {
   const [submissionFiles, setSubmissionFiles] = useState<File[]>([]); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [selectedRubricId, setSelectedRubricId] = useState<number | null>(null);
   const [selectedRubricName, setSelectedRubricName] = useState<string | null>(null);
   const [evaluations, setEvaluations] = useState<any[]>([]);
@@ -97,7 +99,9 @@ const GradePage = () => {
     try {
       if (!editedName.trim()) return;
 
-      await updateEvaluation(id, editedName);
+      const data = await updateEvaluation(id, editedName);
+
+      setSuccess(data.message)
 
       setEvaluations((prev) =>
         prev.map((item) =>
@@ -110,7 +114,7 @@ const GradePage = () => {
       setEditingId(null);
     } catch (err: any) {
       console.error("Failed to update name", err);
-      alert(err.message || "Update failed");
+      setError("Update failed")
     }
   };
 
@@ -119,8 +123,8 @@ const GradePage = () => {
       await retryEvaluation(id);
       fetchDataEvaluations(); 
     } catch (err) {
+      setError("Retry Failed")
       console.error("Retry failed", err);
-      alert("Retry failed");
     }
   };
 
@@ -191,8 +195,21 @@ const GradePage = () => {
   ? evaluations.filter((e) => e.rubric.rubric_id === filterRubricId)
   : evaluations;
 
+  const handleDelete = async (id: number) => {
+    try {
+      const res  = await removeEvaluation(id);
+
+      setSuccess(res.message)
+      setEvaluations((prev) => prev.filter((r) => r.id !== id));
+    } catch (err: any) {
+      setError(err?.message || "Failed to delete evaluation");
+    }
+  };
+
   return (
     <Layout>
+      {error && <div className={styles.error}>{error}</div>}
+      {success && <div className={styles.success}>{success}</div>}
       <div className={styles.wrapper}>
         <div className={styles.left}>
           <div className={styles.card}>
@@ -266,7 +283,6 @@ const GradePage = () => {
               {loading ? "Processing..." : "Generate Evaluation"}
             </button>
 
-            {error && <div className={styles.error}>{error}</div>}
           </div>
         </div>
 
@@ -399,6 +415,18 @@ const GradePage = () => {
                                 Retry
                               </button>
                             )}
+
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => {
+                                const confirmDelete = window.confirm("Are you sure you want to delete this evaluation?");
+                                if (confirmDelete) {
+                                  handleDelete(item.id);
+                                }
+                              }}
+                            >
+                              Remove
+                            </button>
                           </>
                         )}
                       </td>

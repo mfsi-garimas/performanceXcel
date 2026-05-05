@@ -152,3 +152,30 @@ export const retryEvaluation = async (id: number) => {
 
   return data;
 };
+
+export const removeEvaluation = async (evalId: number) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("User not logged in");
+  }
+
+  const res = await fetch(`${API_URL}/remove-evaluation/${evalId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (res.status === 401 ) {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+    return Promise.reject(new Error("Session expired"));
+  }
+
+  if (!res.ok) {
+    throw new Error("Failed to delete evaluation");
+  }
+
+  return res.json();
+};
