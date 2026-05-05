@@ -18,5 +18,5 @@ class User(Base):
     role = Column(String, default=UserRole.TEACHER.value)
     created_date = Column(DateTime, default=datetime.utcnow, nullable=False)
 
-    evaluations = relationship("Evaluation", back_populates="user")
-    rubrics = relationship("Rubric", back_populates="user")
+    evaluations = relationship("Evaluation", back_populates="user", cascade="all, delete-orphan")
+    rubrics = relationship("Rubric", back_populates="user", cascade="all, delete-orphan")

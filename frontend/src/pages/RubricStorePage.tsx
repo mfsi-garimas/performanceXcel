@@ -166,7 +166,7 @@ const RubricStore = () => {
                     <button
                       className={styles.deleteBtn}
                       onClick={() => {
-                        const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+                        const confirmDelete = window.confirm("Deleting this rubric will also permanently remove all associated evaluations. Do you want to continue?");
                         if (confirmDelete) {
                           handleDelete(item.id);
                         }
