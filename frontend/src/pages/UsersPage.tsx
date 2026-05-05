@@ -61,7 +61,7 @@ const UsersPage = () => {
     setStatus("");
 
     try {
-      await createUser(
+      const data = await createUser(
         form.username,
         form.email,
         form.password,
@@ -79,6 +79,9 @@ const UsersPage = () => {
         confirm_password:"",
         role: "TEACHER",
       });
+
+      setStatus(data.message)
+      
     } catch (err: any) {
       setError(err?.message || "Failed to create user");
     } finally {
@@ -90,8 +93,9 @@ const UsersPage = () => {
     if (!confirm("Delete this user?")) return;
 
     try {
-      await removeUser(id);
+      const data = await removeUser(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
+      setStatus(data.message)
     } catch (err: any) {
       setError(err?.message || "Delete failed");
     }
@@ -100,7 +104,7 @@ const UsersPage = () => {
   const handleSave = async (id: number) => {
     try {
 
-      await updateUser(id, {
+      const data = await updateUser(id, {
         username: editedUser.username,
         email: editedUser.email,
         password: editedUser.password,
@@ -113,6 +117,8 @@ const UsersPage = () => {
         )
       );
 
+      setStatus(data.message)
+
       setEditingId(null);
     } catch {
       setError("Update failed");
@@ -121,6 +127,8 @@ const UsersPage = () => {
 
   return (
     <Layout>
+      {error && <div className={styles.error}>{error}</div>}
+      {status && <div className={styles.success}>{status}</div>}
       <div className={styles.wrapper}>
         <div className={styles.left}>
           <div className={styles.card}>
@@ -200,9 +208,6 @@ const UsersPage = () => {
             >
               {loading ? "Creating..." : "Create User"}
             </button>
-
-            {error && <div className={styles.error}>{error}</div>}
-            {status && <div className={styles.success}>{status}</div>}
           </div>
         </div>
 

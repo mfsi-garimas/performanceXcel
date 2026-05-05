@@ -87,7 +87,7 @@ async def create_rubric(
 
             yield send(
                 "completed",
-                "Done",
+                "Rubric uploaded successfully",
                 data=rubric_json_data
             )
 

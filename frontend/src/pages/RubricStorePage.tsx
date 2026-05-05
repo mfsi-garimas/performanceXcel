@@ -27,7 +27,9 @@ const RubricStore = () => {
 
   const handleDelete = async (id: number) => {
   try {
-    await removeRubric(id);
+    const data = await removeRubric(id);
+
+    setStatus(data.message); 
 
     setRubrics((prev) => prev.filter((r) => r.id !== id));
   } catch (err: any) {
@@ -79,6 +81,12 @@ const RubricStore = () => {
 
   return (
     <Layout>
+      {error && (
+              <div className={styles.error}>{error}</div>
+      )}
+      {status && (
+        <div className={styles.success}>{status}</div>
+      )}
       <div className={styles.wrapper}>
         <div className={styles.left}>
           <div className={styles.card}>
@@ -116,12 +124,6 @@ const RubricStore = () => {
             >
               {loading ? "Uploading..." : "Upload File"}
             </button>
-            {error && (
-              <div className={styles.error}>{error}</div>
-            )}
-            {status && (
-              <div className={styles.success}>{status}</div>
-            )}
           </div>
         </div>
 
@@ -166,7 +168,7 @@ const RubricStore = () => {
                     <button
                       className={styles.deleteBtn}
                       onClick={() => {
-                        const confirmDelete = window.confirm("Deleting this rubric will also permanently remove all associated evaluations. Do you want to continue?");
+                        const confirmDelete = window.confirm("Deleting this rubric will also permanently remove all associated submissions. Do you want to continue?");
                         if (confirmDelete) {
                           handleDelete(item.id);
                         }
