@@ -85,6 +85,7 @@ const GradePage = () => {
     try {
       await gradeSubmission(selectedRubricId, submissionFiles);
 
+      setSelectedRubricName(null);
       setSubmissionFiles([]);
       setSelectedRubricId(null);
       fetchDataEvaluations();
