@@ -40,7 +40,12 @@ async def get_all_evaluations(user_email: str = Depends(verify_token)):
 
         user_id = current_user.id 
 
-        evaluations = db.query(Evaluation).filter(Evaluation.user_id == user_id).all()
+        evaluations = (
+            db.query(Evaluation)
+            .filter(Evaluation.user_id == user_id)
+            .order_by(Evaluation.created_date.desc())
+            .all()
+        )
 
         response = []
         for e in evaluations:
