@@ -291,7 +291,7 @@ const GradePage = () => {
                   setFilterRubricId(val ? Number(val) : null);
                 }}
               >
-                <option value="">All Rubrics</option>
+                <option value="">Filter Submissions by Rubric</option>
                 {rubrics.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.rubric_title}
