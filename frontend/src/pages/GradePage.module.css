@@ -131,7 +131,13 @@
   /* max-width: 1200px; */
   margin: 0 auto;
   width:100%;
-  font-size: 15px;
+  font-size: 14px;
+}
+
+@media (max-width: 1100px) {
+  .wrapper {
+    font-size: 12px !important;
+  }
 }
 
 .left,
@@ -388,4 +394,32 @@
 .table {
   min-width: 800px;
   border-collapse: collapse;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  min-width: 900px;
+}
+
+.table td,
+.table th {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.editBtn,
+.deleteBtn,
+.saveBtn,
+.cancelBtn {
+  padding: 4px 8px;
+  font-size: 12px !important;
 }
