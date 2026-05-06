@@ -416,10 +416,8 @@
   flex-wrap: wrap;
 }
 
-.editBtn,
-.deleteBtn,
-.saveBtn,
-.cancelBtn {
+.actions button {
   padding: 4px 8px;
   font-size: 12px !important;
 }
+
