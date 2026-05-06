@@ -223,9 +223,10 @@
 .actions {
   display: flex;
   gap: 8px;
+  justify-content: center;
 }
 
-.actionCell button {
+.actions button {
   width: max-content !important;
   border-radius: 6px !important;
 }

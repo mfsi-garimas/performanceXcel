@@ -310,6 +310,7 @@
 .actionCell {
   display: flex;
   gap: 8px;
+  justify-content: center;
 }
 
 .actionCell button {
