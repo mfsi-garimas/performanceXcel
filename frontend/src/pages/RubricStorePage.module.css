@@ -12,6 +12,9 @@
   .wrapper {
     font-size: 12px !important;
   }
+  .actions button {
+    width: 100% !important;
+  }
 }
 
 .left,
@@ -232,7 +235,7 @@
 }
 
 .actions button {
-  width: max-content !important;
+  width: max-content;
   border-radius: 6px !important;
 }
 

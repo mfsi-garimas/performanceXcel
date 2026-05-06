@@ -138,6 +138,9 @@
   .wrapper {
     font-size: 12px !important;
   }
+  .actionCell button {
+    width: 100% !important;
+  }
 }
 
 .left,
@@ -321,7 +324,7 @@
 }
 
 .actionCell button {
-  width: max-content !important;
+  width: max-content;
   padding: 4px 8px;
   font-size: 12px !important;
 }
