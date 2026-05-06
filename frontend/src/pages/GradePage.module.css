@@ -312,6 +312,10 @@
   gap: 8px;
 }
 
+.actionCell button {
+  width: max-content !important;
+}
+
 .editBtn {
   background: #f59e0b;
   color: white;

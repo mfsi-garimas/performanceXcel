@@ -221,8 +221,13 @@
 
 /* ACTIONS */
 .actions {
-  display: grid;
+  display: flex;
   gap: 8px;
+}
+
+.actionCell button {
+  width: max-content !important;
+  border-radius: 6px !important;
 }
 
 .editBtn {
