@@ -315,12 +315,15 @@
 
 .actionCell {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .actionCell button {
   width: max-content !important;
+  padding: 4px 8px;
+  font-size: 12px !important;
 }
 
 .editBtn {
@@ -408,16 +411,5 @@
 .table th {
   white-space: nowrap;
   vertical-align: middle;
-}
-
-.actions {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.actions button {
-  padding: 4px 8px;
-  font-size: 12px !important;
 }
 
