@@ -100,7 +100,7 @@
 
 /* Button */
 .button {
-  background: #6366f1;
+  background: #46abfb;
   color: white;
 }
 
@@ -109,11 +109,15 @@
   cursor: not-allowed;
 }
 
+.button:hover{
+  background: #0089ff;
+}
+
 /* Error */
 .error {
-  background: #fef2f2;          /* light red background */
-  color: #b91c1c;               /* strong readable red */
-  border: 1px solid #fecaca;    /* subtle border */
+  background: #fef2f2;       
+  color: #b91c1c;             
+  border: 1px solid #fecaca;   
   padding: 10px 12px;
   border-radius: 8px;
   font-size: 13px;
@@ -127,7 +131,7 @@
 
 .forgot a {
   font-size: 12px;
-  color: #6366f1;
+  color: #46abfb;
   text-decoration: none;
 }
 
