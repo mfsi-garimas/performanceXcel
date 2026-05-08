@@ -95,7 +95,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #dddde4;
+  background: #46abfb4d;
   color: white;
   display: flex;
   align-items: center;
@@ -131,7 +131,8 @@
 }
 
 .logoutItem {
-  color: #46abfb;
+  color: white;
+  background-color: #46abfb !important;
   font-size: 15px;
 }
 
