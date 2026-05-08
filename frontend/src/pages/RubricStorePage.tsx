@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styles from "./RubricStorePage.module.css";
+import styles from "./Common.module.css";
 import { removeRubric, getRubrics, uploadRubric } from "../api/rubricApi";
 import Layout from "../components/Layout";
 import type { Rubric } from "../types/types";

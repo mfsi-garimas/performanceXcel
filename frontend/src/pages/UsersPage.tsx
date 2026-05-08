@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styles from "./RubricStorePage.module.css";
+import styles from "./Common.module.css";
 import {
   getUsers,
   createUser,

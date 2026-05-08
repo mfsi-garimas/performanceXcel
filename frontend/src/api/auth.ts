@@ -38,7 +38,7 @@ export const forgotPassword = async (email: string) => {
   const data = await res.json();
 
   if (!res.ok) {
-    let message = "Login failed";
+    let message = "Forgot password failed";
 
     if (typeof data.detail === "string") {
       message = data.detail;

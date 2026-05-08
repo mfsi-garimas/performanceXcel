@@ -6,7 +6,7 @@ import {
   retryEvaluation,
   removeEvaluation
 } from "../api/gradingApi";
-import styles from "./GradePage.module.css";
+import styles from "./Common.module.css";
 import ResultViewer from "./ResultViewer";
 import Layout from "../components/Layout";
 import { getRubrics } from "../api/rubricApi";
@@ -421,7 +421,7 @@ const GradePage = () => {
                             )}
 
                             <button
-                              className="btn btn-danger"
+                              className={styles.deleteBtn}
                               onClick={() => {
                                 const confirmDelete = window.confirm("Are you sure you want to delete this evaluation?");
                                 if (confirmDelete) {

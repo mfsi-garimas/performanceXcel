@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styles from "./Settings.module.css";
+import styles from "./Common.module.css";
 import { updateUser, getUser } from "../api/userApi";
 import Layout from "../components/Layout";
 
@@ -90,21 +90,26 @@ const Settings = () => {
   };
 
   return (
-    <Layout>
-      <div className={styles.container}>
-        <h2 className={styles.title}>Account Settings</h2>
+  <Layout>
+    <div className={styles.authWrapper}>
+      <div className={styles.authCard}>
+        <h2 className={styles.authTitle}>Account Settings</h2>
 
-        <div className={styles.field}>
-          <label>Username</label>
+        <div className={styles.authField}>
+          <label className={styles.authLabel}>Username</label>
+
           <input
+            className={styles.authInput}
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
 
-        <div className={styles.field}>
-          <label>New Password</label>
+        <div className={styles.authField}>
+          <label className={styles.authLabel}>New Password</label>
+
           <input
+            className={styles.authInput}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -112,9 +117,11 @@ const Settings = () => {
           />
         </div>
 
-        <div className={styles.field}>
-          <label>Confirm Password</label>
+        <div className={styles.authField}>
+          <label className={styles.authLabel}>Confirm Password</label>
+
           <input
+            className={styles.authInput}
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -123,17 +130,28 @@ const Settings = () => {
         </div>
 
         <button
-          className={styles.saveBtn}
+          className={styles.button}
           onClick={handleSave}
           disabled={loading}
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>
-        {status && <div className={styles.success}>{status}</div>}
-        {error && <div className={styles.error}>{error}</div>}
+
+        {status && (
+          <div className={styles.authSuccess}>
+            {status}
+          </div>
+        )}
+
+        {error && (
+          <div className={styles.authError}>
+            {error}
+          </div>
+        )}
       </div>
-    </Layout>
-  );
+    </div>
+  </Layout>
+);
 };
 
 export default Settings;
