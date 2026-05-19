@@ -457,7 +457,7 @@ const GradePage = () => {
 
       <div className={styles.actions}>
         <DownloadPDFButton targetRef={resultRef} />
-        <DownloadDocButton targetRef={resultRef} />
+        <DownloadDocButton evaluationData={selectedEvaluation.evaluation} />
       </div>
 
       <div className={styles.modalContent}>
