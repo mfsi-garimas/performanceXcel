@@ -1,14 +1,23 @@
+from app.services.llm_ocr_service import ocr_with_llm
 from app.services.ocr_service import run_ocr
+from app.services.ocr_provider import extract_ocr
+
 from app.services.llm_service import run_llm
 from app.services.rubric_service import extract_rubric
-from app.prompts.rubric import build_prompt
-from app.prompts.evaluation import build_prompt as build_prompt_evaluate
+from app.prompts.rubric import build_prompt_rubric_json
+from app.prompts.evaluation import build_prompt_submission_evaluation
 from app.config.log_config import logger
 from app.db.init_db import SessionLocal
 from app.models.rubric import Rubric
 import json
 from app.models.evaluation import Evaluation
 from app.db.init_db import SessionLocal
+from app.prompts.rubric import (
+    build_prompt_ocr_with_JSON_formatting
+)
+from app.prompts.evaluation import (
+    build_prompt_evaluation_ocr
+)
 
 def load_rubric_node(state: dict) -> dict:
     rubric_id = state.get("rubric_id")
@@ -17,12 +26,20 @@ def load_rubric_node(state: dict) -> dict:
 
     db = SessionLocal()
 
-    rubric = db.query(Rubric).filter(Rubric.id == rubric_id).first()
+    try:
 
-    state["rubric_json"] = rubric.rubric_json
-    state["rubric_images"] = json.loads(rubric.rubric_path or "[]")
+        rubric = db.query(Rubric).filter(Rubric.id == rubric_id).first()
 
-    return state
+        if not rubric:
+            raise ValueError("Rubric not found")
+
+        state["rubric_json"] = rubric.rubric_json
+        state["rubric_images"] = json.loads(rubric.rubric_path or "[]")
+
+        return state
+
+    finally:
+        db.close()
 
 def ocr_node(state: dict) -> dict:
     """
@@ -37,22 +54,39 @@ def ocr_node(state: dict) -> dict:
 
         # Rubric OCR
         if not state.get("rubric_id") and state.get("rubric_images"):
-            text_lines = []
-            for img in state["rubric_images"]:
-                ocr_output = run_ocr(img)
-                text_lines.append(ocr_output["ocr_text"])
-                state["rubric_text"] = " ".join(text_lines)
-                state["rubric_html"] = ocr_output["table_html"]
-                logger.debug("Rubric OCR completed", extra={"rubric_text_preview": state["rubric_text"][:200]})
+            logger.info(
+                "Starting Rubric OCR",
+                extra={
+                    "rubric_images_count":
+                    len(state["rubric_images"])
+                }
+            )
+            prompt = build_prompt_ocr_with_JSON_formatting()
+            result = extract_ocr(
+                image_paths=state.get("rubric_images"),
+                prompt=prompt
+            )
+            if result.get("ocr_text"):
+                state["rubric_text"] = result["ocr_text"]
+
+            if result.get("table_html"):
+                state["rubric_html"] = result["table_html"]
+
+            if result.get("llm_output"):
+                state["rubric_json"] = result["llm_output"]
+                logger.debug("Rubric OCR completed", extra={"rubric_json": state["rubric_json"]})
 
         # Submission OCR
         if state.get("submission_images"):
             logger.info("Starting Submission OCR", extra={"state_keys": list(state.keys())})
-            text_lines = []
-            for img in state["submission_images"]:
-                ocr_output = run_ocr(img)
-                text_lines.append(ocr_output["ocr_text"])
-                state["submission_text"] = " ".join(text_lines)
+            prompt = build_prompt_evaluation_ocr()
+            result = extract_ocr(
+                image_paths=state["submission_images"],
+                prompt=prompt,
+                output_format="txt"
+            )
+            if result.get("llm_output"):
+                state["submission_text"] = result["llm_output"]
                 logger.debug("Submission OCR completed", extra={"submission_text_preview": state["submission_text"][:200]})
 
         logger.info("OCR node completed", extra={"state_keys": list(state.keys())})
@@ -64,22 +98,37 @@ def ocr_node(state: dict) -> dict:
 
 
 def merge_input_node(state: dict) -> dict:
-    """
-    Merge OCR output with provided text input if images are not provided.
-    """
-    try:
-        if not state.get("rubric_id"):
-            state["rubric_text"] = state.get("rubric_text") or state.get("ocr_rubric")
-        state["submission_text"] = state.get("submission_text") or state.get("ocr_submission")
-        logger.info("Merge input node completed", extra={
-            "rubric_present": "rubric_text" in state,
-            "submission_present": "submission_text" in state
-        })
-        return state
-    except Exception as e:
-        logger.exception("Merge input node failed", extra={"state_keys": list(state.keys())})
-        raise
 
+    try:
+
+        if not state.get("rubric_id"):
+            state["rubric_text"] = (
+                state.get("rubric_text")
+                or state.get("ocr_rubric")
+            )
+
+        state["submission_text"] = (
+            state.get("submission_text")
+            or state.get("ocr_submission")
+        )
+
+        logger.info(
+            "Merge input node completed",
+            extra={
+                "rubric_present": bool(state.get("rubric_text")),
+                "submission_present": bool(state.get("submission_text"))
+            }
+        )
+
+        return state
+
+    except Exception:
+
+        logger.exception(
+            "Merge input node failed",
+            extra={"state_keys": list(state.keys())}
+        )
+        raise
 
 def grading_node(state: dict) -> dict:
     """
@@ -95,13 +144,22 @@ def grading_node(state: dict) -> dict:
             logger.info("Using DB rubric_json for grading")
             return state 
 
+        if state.get("rubric_json"):
+            return state
+
         rubric = state.get("rubric_text")
         rubric_html = state.get("rubric_html","")
         if not rubric:
             raise ValueError("No rubric text available for grading node")
 
-        prompt = build_prompt(rubric, rubric_html)
+        prompt = build_prompt_rubric_json(rubric, rubric_html)
         result = run_llm(prompt)
+        if isinstance(result, str):
+            try:
+                result = json.loads(result)
+            except:
+                raise ValueError("Invalid rubric JSON from LLM")
+
         state["rubric_json"] = result
 
         logger.info("Grading node completed", extra={
@@ -135,7 +193,7 @@ def evaluation_node(state: dict) -> dict:
         if not rubric_json or not submission_text:
             raise ValueError("Rubric JSON or submission text missing for evaluation node")
 
-        prompt = build_prompt_evaluate(rubric_json, submission_text)
+        prompt = build_prompt_submission_evaluation(rubric_json, submission_text)
         result = run_llm(prompt)
 
         state["llm_output"] = result

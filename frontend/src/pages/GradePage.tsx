@@ -445,29 +445,30 @@ const GradePage = () => {
       </div>
 
       {showModal && selectedEvaluation && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <button
-              className={styles.closeBtn}
-              onClick={() => setShowModal(false)}
-            >
-              ✖
-            </button>
+  <div className={styles.modalOverlay}>
+    <div className={styles.modal}>
 
-            <DownloadPDFButton
-              targetRef={resultRef}
-            />
+      <button
+        className={styles.closeBtn}
+        onClick={() => setShowModal(false)}
+      >
+        ✖
+      </button>
 
-            <DownloadDocButton
-              targetRef={resultRef}
-            />
+      <div className={styles.actions}>
+        <DownloadPDFButton targetRef={resultRef} />
+        <DownloadDocButton targetRef={resultRef} />
+      </div>
 
-            <div ref={resultRef}>
-            <ResultViewer data={selectedEvaluation.evaluation} />
-          </div>
-          </div>
+      <div className={styles.modalContent}>
+        <div ref={resultRef}>
+          <ResultViewer data={selectedEvaluation.evaluation} />
         </div>
-      )}
+      </div>
+
+    </div>
+  </div>
+)}
     </Layout>
   );
 };

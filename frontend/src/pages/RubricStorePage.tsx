@@ -184,14 +184,32 @@ const RubricStore = () => {
           )}
         </div>
 
-        {selectedImage && (
-          <div
-            className={styles.modal}
-            onClick={() => setSelectedImage("")}
-          >
-            <img src={selectedImage} className={styles.modalImage} />
-          </div>
-        )}
+       {selectedImage && (
+  <div
+    className={styles.modalOverlay}
+    onClick={() => setSelectedImage("")}
+  >
+    <div
+      className={styles.modal}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        className={styles.closeBtn}
+        onClick={() => setSelectedImage("")}
+      >
+        ✖
+      </button>
+
+      <div className={styles.modalContent}>
+        <img
+          src={selectedImage}
+          alt="Preview"
+          className={styles.modalImage}
+        />
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </Layout>
   );

@@ -70,7 +70,18 @@ class Settings:
         self.RABBITMQ_INGEST_QUEUE: str = os.getenv("RABBITMQ_INGEST_QUEUE", "agentic_web_starter.ingestion")
 
         #ollama
-        self.OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generat")
+        self.OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
         self.MODEL_NAME = os.getenv("MODEL_NAME", "gemma3:4b")
+
+        #AWS
+        self.AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
+        self.AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+        self.AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+        self.AWS_MODEL= os.getenv("AWS_MODEL","amazon.nova-lite-v1:0")
+
+        #switch LLM and OCR
+        self.LLM_USED = os.getenv("LLM_USED","BEDROCK")
+        self.OCR_PROVIDER = os.getenv("OCR_PROVIDER","LLM")
+
         
 settings = Settings()

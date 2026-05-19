@@ -7,7 +7,7 @@ MODEL_NAME = settings.MODEL_NAME
 
 session = requests.Session()
 
-def generate(prompt: str):
+def generate_ollama(prompt: str):
     try:
         logger.info("Sending request to Ollama API", extra={
             "model": MODEL_NAME,

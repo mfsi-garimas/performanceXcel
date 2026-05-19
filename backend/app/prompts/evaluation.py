@@ -33,12 +33,11 @@ def generate_grading_template(rubric_dict: dict) -> str:
     template += '    "SuggestionsForRevision": ["list at least 2 actionable improvements"]\n'
     template += '  }\n'
     template += '}'
-    print(template)
     return template
 
-def build_prompt(rubric_dict: dict, submission_text: str) -> str:
+def build_prompt_submission_evaluation(rubric_dict: dict, submission_text: str) -> str:
     """
-    Build a prompt for the LLM using the rubric and student submission.
+    Evaluate student submission based on provided rubric
     """
     grading_template = generate_grading_template(rubric_dict)
     prompt = f"""
@@ -55,3 +54,33 @@ def build_prompt(rubric_dict: dict, submission_text: str) -> str:
                 \"\"\"{submission_text}\"\"\"
             """
     return prompt
+
+def build_prompt_evaluation_ocr():
+    """
+    OCR on uploaded student submission
+    """
+    return """
+                You are an expert OCR and document understanding system.
+
+                Your task is to carefully read and extract ALL information from the provided evaluation image/document.
+
+                Instructions:
+                1. Read all visible text accurately.
+                2. Preserve the original structure as much as possible.
+                3. Maintain table layout in readable text format.
+                4. Extract handwritten and printed text if present.
+                5. Capture scores, grades, comments, rubric details, feedback, and student information.
+                6. Do NOT summarize.
+                7. Do NOT hallucinate missing information.
+                8. If text is unclear, provide the closest readable interpretation.
+                9. Return plain text only.
+                10. Do NOT return JSON.
+                11. Do NOT use markdown formatting or code blocks.
+
+                Output Requirements:
+                - Keep section hierarchy clear.
+                - Preserve row-column relationships for tables.
+                - Maintain line breaks where meaningful.
+                - Include every readable piece of text from the image.
+                - Return the extracted content exactly as understood from the document.
+            """

@@ -1,6 +1,6 @@
 import json
 from app.utils.parser import parse_json_safe
-from app.llm.llm_client import generate
+from app.llm.router import generate
 from app.config.log_config import logger
 
 def run_llm(prompt):
