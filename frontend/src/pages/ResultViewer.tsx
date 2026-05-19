@@ -28,7 +28,7 @@ const ResultViewer: React.FC<Props> = ({ data }) => {
     <div className={styles.container}>
       {/* 🔹 Summary */}
       <div className={styles.card}>
-        <h2 className={styles.title}>📊 Grading Summary</h2>
+        <h2 className={styles.title}>Grading Summary</h2>
 
         <div className={styles.row}>
           <div>

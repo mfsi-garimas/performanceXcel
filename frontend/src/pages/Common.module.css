@@ -581,3 +581,26 @@
 
   padding-right: 8px;
 }
+
+.pdf-content {
+  background: #ffffff;
+  padding: 20px;
+  width: 100%;
+}
+
+.pdf-content * {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.pdfHeader {
+  display: flex;
+  justify-content: left;
+  margin-bottom: 20px;
+}
+
+.pdfLogo {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+}

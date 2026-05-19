@@ -20,8 +20,8 @@
   margin-bottom: 12px;
 }
 
-.subheading {
-  font-size: 15px;
+.subheading{
+  font-size: 18px;
   font-weight: 600;
   margin: 16px 0 8px;
 }
@@ -78,7 +78,7 @@
 /* Text */
 .text {
   font-size: 14px;
-  color: #4b5563;
+  color: black;
   margin-top: 4px;
 }
 

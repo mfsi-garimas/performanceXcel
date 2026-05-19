@@ -461,7 +461,14 @@ const GradePage = () => {
       </div>
 
       <div className={styles.modalContent}>
-        <div ref={resultRef}>
+        <div ref={resultRef} className="pdf-content">
+          <div className={styles.pdfHeader}>
+            <img
+              src="/performanceXcel-logo.png"
+              alt="Logo"
+              className={styles.pdfLogo}
+            />
+          </div>
           <ResultViewer data={selectedEvaluation.evaluation} />
         </div>
       </div>

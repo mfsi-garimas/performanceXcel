@@ -1,47 +1,65 @@
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import html2pdf from "html2pdf.js";
 import getFileName from "./GenerateRandomFileName";
 
 type Props = {
-    targetRef: React.RefObject<HTMLDivElement | null>;
+  targetRef: React.RefObject<HTMLDivElement | null>;
 };
 
 const DownloadPDFButton = ({ targetRef }: Props) => {
   const handleDownload = async () => {
-    const fileName = getFileName();
     if (!targetRef.current) return;
 
-    const canvas = await html2canvas(targetRef.current, {
-      scale: 2,
-      useCORS: true,
-    });
+    const fileName = getFileName();
 
-    const imgData = canvas.toDataURL("image/png");
+    const element = targetRef.current;
 
-    const pdf = new jsPDF("p", "mm", "a4");
+    const options = {
+      margin: [10, 10, 10, 10] as [
+        number,
+        number,
+        number,
+        number
+      ],
 
-    const imgWidth = 210;
-    const pageHeight = 297;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      filename: `${fileName}.pdf`,
 
-    let heightLeft = imgHeight;
-    let position = 0;
+      image: {
+        type: "png" as const,
+        quality: 1,
+      },
 
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      },
 
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
+      jsPDF: {
+        unit: "mm" as const,
+        format: "a4" as const,
+        orientation: "portrait" as const,
+      },
 
-    pdf.save(fileName+".pdf");
+      pagebreak: {
+        mode: [ "css", "legacy"],
+      },
+    };
+
+    await html2pdf()
+      .set(options)
+      .from(element)
+      .save();
   };
 
   return (
-    <button className="btn btn-primary" onClick={handleDownload} style={{ width: "fit-content",marginRight: "10px"}}>
+    <button
+      className="btn btn-primary"
+      onClick={handleDownload}
+      style={{
+        width: "fit-content",
+        marginRight: "10px",
+      }}
+    >
       Download PDF
     </button>
   );
